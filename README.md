@@ -9,22 +9,28 @@ The goal is to develop a simple ATM-application
    Creates a new user session
 
 * `logout`
-Disposes the current user session
+
+   Disposes the current user session
 
 * `get balance`
-Displays the current balance
+
+   Displays the current balance
 
 * `withdraw [amount]`
-Withdraw the specified amount of money from the account
+
+   Withdraw the specified amount of money from the account
 
 * `deposit [amount]`
-Deposits the specified amount of money to the account
+
+   Deposits the specified amount of money to the account
 
 * `transfer [amount] to [user]`
-Transfers the specified amount of money from the current user to the specified one
+
+   Transfers the specified amount of money from the current user to the specified one
 
 * `history ​ (optional)`
-Displays the account history
+
+   Displays the account history
 
 
 You are free to tweak the commands above as you see fit as long as the basic functionality remains the same. Note that the history function is an optional enhancement.
