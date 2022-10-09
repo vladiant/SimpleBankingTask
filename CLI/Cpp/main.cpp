@@ -30,10 +30,13 @@ int main(int, char**) {
   // TODO: Read balance from file
   // TODO: Handle diffrent user
   BalanceType balance = 0;
+  std::string username;
 
   // Commands loop
   while (true) {
     std::string line;
+    // Command propmpt
+    std::cout << "$ ";
     std::getline(std::cin, line);
 
     // Extract commands from line
@@ -59,7 +62,7 @@ int main(int, char**) {
       case 1:
         if (command == "logout") {
           // TODO: Handle commands after logouts
-          logFile << "logout" << '\n';
+          logFile << username << " " << "logout" << '\n';
           return EXIT_SUCCESS;
         } else if (command == "history") {
           std::fstream historyFile(fileName, std::ios_base::in);
@@ -89,7 +92,8 @@ int main(int, char**) {
           BalanceType amount;
           ss >> amount;
           balance -= amount;
-          logFile << "withdraw " << amount << '\n';
+          logFile << username << " " << "withdraw " << amount << '\n';
+          std::cout << "ok!\n";
         } else if (command == "deposit") {
           std::stringstream ss(commands[1]);
           BalanceType amount;
@@ -97,7 +101,7 @@ int main(int, char**) {
           balance += amount;
           // TODO: Which user?
           // TODO: When OK?
-          logFile << "deposit " << amount << '\n';
+          logFile << username << " " << "deposit " << amount << '\n';
           std::cout << "ok!\n";
         } else {
           printNotSupportedCommand(commands);
@@ -105,12 +109,12 @@ int main(int, char**) {
         }
         break;
       case 3:
-        if (command == "login") {
-          const std::string username{commands[1]};
+        if (command == "login") {          
           const std::string password{commands[2]};
           // TODO: Handle password check
+          username = commands[1];
           std::cout << "Welcome, " << username << '\n';
-          logFile << "login " << username << " " << password << '\n';
+          logFile << username << " " << "login " << username << " " << password << '\n';
         } else {
           printNotSupportedCommand(commands);
           continue;
@@ -129,9 +133,9 @@ int main(int, char**) {
           const std::string user{commands[3]};
           // TODO: Handle insufficient balance
           // TODO: Handle missing user(s)
-          logFile << "transfer " << amount << " " << subCommand << " " << user
+          logFile << username << " " << "transfer " << amount << " " << subCommand << " " << user
                   << '\n';
-          std::cout << "transfer " << amount << " " << subCommand << " " << user
+          std::cout << username << " " << "transfer " << amount << " " << subCommand << " " << user
                     << '\n';
         } else {
           printNotSupportedCommand(commands);
