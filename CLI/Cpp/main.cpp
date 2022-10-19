@@ -19,6 +19,144 @@ void printNotSupportedCommand(const std::vector<std::string>& commands) {
   printCommand(commands);
 }
 
+enum class Status { EMPTY, UNKNOWN, LOGOUT, NOT_LOGGED, OK };
+
+Status processCommand(const std::string& line, std::fstream& logFile,
+                      std::string& username, BalanceType& balance) {
+  // Extract commands from line
+  std::istringstream inputLine{line};
+  std::vector<std::string> commands;
+  for (std::string command; std::getline(inputLine, command, ' ');) {
+    if (command.empty()) {
+      continue;
+    }
+
+    commands.emplace_back(std::move(command));
+  }
+
+  // Skip empty command line
+  if (commands.empty()) {
+    return Status::EMPTY;
+  }
+
+  const auto& command = commands.at(0);
+
+  // Process command
+  switch (commands.size()) {
+    case 1:
+      if (command == "logout") {
+        logFile << username << " "
+                << "logout" << '\n';
+        username.clear();
+        return Status::LOGOUT;
+      } else if (command == "history") {
+        // TODO: Flush current file?
+        std::fstream historyFile(fileName, std::ios_base::in);
+        while (historyFile) {
+          std::string log;
+          std::getline(historyFile, log);
+          std::cout << log << '\n';
+        }
+      } else {
+        printNotSupportedCommand(commands);
+        return Status::UNKNOWN;
+      }
+      break;
+    case 2:
+      if (command == "get") {
+        const std::string subCommand{commands[1]};
+        if (subCommand == "balance") {
+          if (username.empty()) {
+            std::cout << "No user logged!\n";
+            return Status::NOT_LOGGED;
+          }
+          std::cout << balance << '\n';
+        } else {
+          printNotSupportedCommand(commands);
+          return Status::UNKNOWN;
+        }
+      } else if (command == "withdraw") {
+        if (username.empty()) {
+          std::cout << "No user logged!\n";
+          return Status::NOT_LOGGED;
+        }
+        // TODO: Handle insufficient amount
+        // TODO: Which user?
+        std::stringstream ss(commands[1]);
+        BalanceType amount;
+        ss >> amount;
+        balance -= amount;
+        logFile << username << " "
+                << "withdraw " << amount << '\n';
+        std::cout << "ok!\n";
+      } else if (command == "deposit") {
+        if (username.empty()) {
+          std::cout << "No user logged!\n";
+          return Status::NOT_LOGGED;
+        }
+        std::stringstream ss(commands[1]);
+        BalanceType amount;
+        ss >> amount;
+        balance += amount;
+        // TODO: Which user?
+        // TODO: When OK?
+        logFile << username << " "
+                << "deposit " << amount << '\n';
+        std::cout << "ok!\n";
+      } else {
+        printNotSupportedCommand(commands);
+        return Status::UNKNOWN;
+      }
+      break;
+    case 3:
+      if (command == "login") {
+        const std::string password{commands[2]};
+        // TODO: Handle password check
+        username = commands[1];
+        std::cout << "Welcome, " << username << '\n';
+        logFile << username << " "
+                << "login " << username << " " << password << '\n';
+      } else {
+        printNotSupportedCommand(commands);
+        return Status::UNKNOWN;
+      }
+      break;
+    case 4:
+      if (command == "transfer") {
+        if (username.empty()) {
+          std::cout << "No user logged!\n";
+          return Status::NOT_LOGGED;
+        }
+        const std::string subCommand{commands[2]};
+        if (subCommand != "to") {
+          printNotSupportedCommand(commands);
+          return Status::UNKNOWN;
+        }
+        std::stringstream ss(commands[1]);
+        BalanceType amount;
+        ss >> amount;
+        const std::string user{commands[3]};
+        // TODO: Handle insufficient balance
+        // TODO: Handle missing user(s)
+        logFile << username << " "
+                << "transfer " << amount << " " << subCommand << " " << user
+                << '\n';
+        std::cout << username << " "
+                  << "transfer " << amount << " " << subCommand << " " << user
+                  << '\n';
+      } else {
+        printNotSupportedCommand(commands);
+        return Status::UNKNOWN;
+      }
+      break;
+    default:
+      printNotSupportedCommand(commands);
+      return Status::UNKNOWN;
+  }
+
+  return Status::OK;
+}
+
 int main(int, char**) {
   // TODO: Handle processing of file
   std::fstream logFile(
@@ -40,137 +178,13 @@ int main(int, char**) {
     std::cout << "$ ";
     std::getline(std::cin, line);
 
-    // Extract commands from line
-    std::istringstream inputLine{line};
-    std::vector<std::string> commands;
-    for (std::string command; std::getline(inputLine, command, ' ');) {
-      if (command.empty()) {
-        continue;
-      }
+    const auto status = processCommand(line, logFile, username, balance);
 
-      commands.emplace_back(std::move(command));
+    if (Status::LOGOUT == status) {
+      break;
     }
 
-    // Skip empty command line
-    if (commands.empty()) {
-      continue;
-    }
-
-    const auto& command = commands.at(0);
-
-    // Process command
-    switch (commands.size()) {
-      case 1:
-        if (command == "logout") {
-          // TODO: Handle commands after logouts
-          logFile << username << " "
-                  << "logout" << '\n';
-          username.clear();
-          return EXIT_SUCCESS;
-        } else if (command == "history") {
-          // TODO: Flush current file?
-          std::fstream historyFile(fileName, std::ios_base::in);
-          while (historyFile) {
-            std::string log;
-            std::getline(historyFile, log);
-            std::cout << log << '\n';
-          }
-        } else {
-          printNotSupportedCommand(commands);
-          continue;
-        }
-        break;
-      case 2:
-        if (command == "get") {
-          const std::string subCommand{commands[1]};
-          if (subCommand == "balance") {
-            if (username.empty()) {
-              std::cout << "No user logged!\n";
-              continue;
-            }
-            std::cout << balance << '\n';
-          } else {
-            printNotSupportedCommand(commands);
-            continue;
-          }
-        } else if (command == "withdraw") {
-          if (username.empty()) {
-            std::cout << "No user logged!\n";
-            continue;
-          }
-          // TODO: Handle insufficient amount
-          // TODO: Which user?
-          std::stringstream ss(commands[1]);
-          BalanceType amount;
-          ss >> amount;
-          balance -= amount;
-          logFile << username << " "
-                  << "withdraw " << amount << '\n';
-          std::cout << "ok!\n";
-        } else if (command == "deposit") {
-          if (username.empty()) {
-            std::cout << "No user logged!\n";
-            continue;
-          }
-          std::stringstream ss(commands[1]);
-          BalanceType amount;
-          ss >> amount;
-          balance += amount;
-          // TODO: Which user?
-          // TODO: When OK?
-          logFile << username << " "
-                  << "deposit " << amount << '\n';
-          std::cout << "ok!\n";
-        } else {
-          printNotSupportedCommand(commands);
-          continue;
-        }
-        break;
-      case 3:
-        if (command == "login") {
-          const std::string password{commands[2]};
-          // TODO: Handle password check
-          username = commands[1];
-          std::cout << "Welcome, " << username << '\n';
-          logFile << username << " "
-                  << "login " << username << " " << password << '\n';
-        } else {
-          printNotSupportedCommand(commands);
-          continue;
-        }
-        break;
-      case 4:
-        if (command == "transfer") {
-          if (username.empty()) {
-            std::cout << "No user logged!\n";
-            continue;
-          }
-          const std::string subCommand{commands[2]};
-          if (subCommand != "to") {
-            printNotSupportedCommand(commands);
-            continue;
-          }
-          std::stringstream ss(commands[1]);
-          BalanceType amount;
-          ss >> amount;
-          const std::string user{commands[3]};
-          // TODO: Handle insufficient balance
-          // TODO: Handle missing user(s)
-          logFile << username << " "
-                  << "transfer " << amount << " " << subCommand << " " << user
-                  << '\n';
-          std::cout << username << " "
-                    << "transfer " << amount << " " << subCommand << " " << user
-                    << '\n';
-        } else {
-          printNotSupportedCommand(commands);
-          continue;
-        }
-        break;
-      default:
-        printNotSupportedCommand(commands);
-        continue;
-    }
+    // TODO: Process different statuses
 
   }  // end command loop
 
