@@ -50,7 +50,8 @@ Status processCommand(const std::string& line, std::fstream& logFile,
         username.clear();
         return Status::LOGOUT;
       } else if (command == "history") {
-        // TODO: Flush current file?
+        // Flush existing data
+        logFile.flush();
         std::fstream historyFile(fileName, std::ios_base::in);
         while (historyFile) {
           std::string log;
