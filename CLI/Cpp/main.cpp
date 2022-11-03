@@ -21,14 +21,10 @@ void printNotSupportedCommand(const std::vector<std::string>& commands) {
   printCommand(commands);
 }
 
-enum class Status { EMPTY, UNKNOWN, LOGOUT, NOT_LOGGED, OK };
-
-Status processCommand(const std::string& line, std::fstream& logFile,
-                      std::string& username, Balances& balances) {
-  // TODO: Duplicated
-  // Extract commands from line
+std::vector<std::string> extractCommands(const std::string& line) {
   std::istringstream inputLine{line};
   std::vector<std::string> commands;
+
   for (std::string command; std::getline(inputLine, command, ' ');) {
     if (command.empty()) {
       continue;
@@ -36,6 +32,22 @@ Status processCommand(const std::string& line, std::fstream& logFile,
 
     commands.emplace_back(std::move(command));
   }
+
+  return commands;
+}
+
+void initializeUserBalance(const std::string& user, Balances& balances) {
+  const auto it = balances.find(user);
+  if (it == balances.end()) {
+    balances[user] = 0;
+  }
+}
+
+enum class Status { EMPTY, UNKNOWN, LOGOUT, NOT_LOGGED, OK };
+
+Status processCommand(const std::string& line, std::fstream& logFile,
+                      std::string& username, Balances& balances) {
+  const auto commands = extractCommands(line);
 
   // Skip empty command line
   if (commands.empty()) {
@@ -120,10 +132,7 @@ Status processCommand(const std::string& line, std::fstream& logFile,
         const std::string password{commands[2]};
         // TODO: Handle password check
         username = commands[1];
-        // TODO: Refactor logic - repeated
-        if (balances.count(username) == 0) {
-          balances[username] = 0;
-        }
+        initializeUserBalance(username, balances);
         std::cout << "Welcome, " << username << '\n';
         logFile << username << " "
                 << "login " << username << " " << password << '\n';
@@ -148,13 +157,10 @@ Status processCommand(const std::string& line, std::fstream& logFile,
         ss >> amount;
         const std::string user{commands[3]};
         // TODO: Handle insufficient balance
-        // TODO: Handle missing user - should create it?
+
+        // TODO: Handle missing user
 
         balances[username] -= amount;
-        // TODO: Refactor logic - repeated
-        if (balances.count(user) == 0) {
-          balances[user] = 0;
-        }
         balances[user] += amount;
 
         logFile << username << " "
@@ -199,17 +205,7 @@ auto readBallances(const std::string& fileName) {
       break;
     }
 
-    // TODO: Duplicated
-    // Extract commands from line
-    std::istringstream inputLine{line};
-    std::vector<std::string> commands;
-    for (std::string command; std::getline(inputLine, command, ' ');) {
-      if (command.empty()) {
-        continue;
-      }
-
-      commands.emplace_back(std::move(command));
-    }
+    const auto commands = extractCommands(line);
 
     // Skip empty command line
     if (commands.empty()) {
@@ -220,10 +216,7 @@ auto readBallances(const std::string& fileName) {
     const auto& currentUsername = commands.at(0);
     const auto& command = commands.at(1);
 
-    // TODO: Refactor logic - repeated
-    if (balances.count(currentUsername) == 0) {
-      balances[currentUsername] = 0;
-    }
+    initializeUserBalance(currentUsername, balances);
 
     // Process command
     switch (commands.size()) {
@@ -251,10 +244,11 @@ auto readBallances(const std::string& fileName) {
           BalanceType amount;
           ss >> amount;
           const std::string user{commands[4]};
-          // TODO: Refactor logic - repeated
-          if (balances.count(user) == 0) {
-            balances[user] = 0;
-          }
+
+          // It is assumed that record is OK
+          // and transfer was done to existing user.
+          initializeUserBalance(user, balances);
+
           balances[currentUsername] -= amount;
           balances[user] += amount;
         }
