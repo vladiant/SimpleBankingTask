@@ -43,7 +43,14 @@ void initializeUserBalance(const std::string& user, Balances& balances) {
   }
 }
 
-enum class Status { EMPTY, UNKNOWN, LOGOUT, NOT_LOGGED, OK };
+enum class Status {
+  EMPTY,
+  UNKNOWN_COMMAND,
+  UNKNOWN_USER,
+  LOGOUT,
+  NOT_LOGGED,
+  OK
+};
 
 Status processCommand(const std::string& line, std::fstream& logFile,
                       std::string& username, Balances& balances) {
@@ -78,7 +85,7 @@ Status processCommand(const std::string& line, std::fstream& logFile,
         }
       } else {
         printNotSupportedCommand(commands);
-        return Status::UNKNOWN;
+        return Status::UNKNOWN_COMMAND;
       }
       break;
     case 2:
@@ -92,7 +99,7 @@ Status processCommand(const std::string& line, std::fstream& logFile,
           std::cout << balances[username] << '\n';
         } else {
           printNotSupportedCommand(commands);
-          return Status::UNKNOWN;
+          return Status::UNKNOWN_COMMAND;
         }
       } else if (command == "withdraw") {
         if (username.empty()) {
@@ -124,7 +131,7 @@ Status processCommand(const std::string& line, std::fstream& logFile,
         std::cout << "ok!\n";
       } else {
         printNotSupportedCommand(commands);
-        return Status::UNKNOWN;
+        return Status::UNKNOWN_COMMAND;
       }
       break;
     case 3:
@@ -138,7 +145,7 @@ Status processCommand(const std::string& line, std::fstream& logFile,
                 << "login " << username << " " << password << '\n';
       } else {
         printNotSupportedCommand(commands);
-        return Status::UNKNOWN;
+        return Status::UNKNOWN_COMMAND;
       }
       break;
     case 4:
@@ -150,7 +157,7 @@ Status processCommand(const std::string& line, std::fstream& logFile,
         const std::string subCommand{commands[2]};
         if (subCommand != "to") {
           printNotSupportedCommand(commands);
-          return Status::UNKNOWN;
+          return Status::UNKNOWN_COMMAND;
         }
         std::stringstream ss(commands[1]);
         BalanceType amount;
@@ -158,7 +165,15 @@ Status processCommand(const std::string& line, std::fstream& logFile,
         const std::string user{commands[3]};
         // TODO: Handle insufficient balance
 
-        // TODO: Handle missing user
+        // Self transfer
+        if (username == user) {
+          // Ignore self transfer, no problem
+          return Status::OK;
+        }
+
+        if (balances.find(user) == balances.end()) {
+          return Status::UNKNOWN_USER;
+        }
 
         balances[username] -= amount;
         balances[user] += amount;
@@ -177,12 +192,12 @@ Status processCommand(const std::string& line, std::fstream& logFile,
         std::cout << "ok!\n";
       } else {
         printNotSupportedCommand(commands);
-        return Status::UNKNOWN;
+        return Status::UNKNOWN_COMMAND;
       }
       break;
     default:
       printNotSupportedCommand(commands);
-      return Status::UNKNOWN;
+      return Status::UNKNOWN_COMMAND;
   }
 
   return Status::OK;
