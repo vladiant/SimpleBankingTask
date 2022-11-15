@@ -114,7 +114,6 @@ Status processCommand(const std::string& line, std::fstream& logFile,
         balances[username] -= amount;
         logFile << username << " "
                 << "withdraw " << amount << '\n';
-        std::cout << "ok!\n";
       } else if (command == "deposit") {
         if (username.empty()) {
           std::cout << "No user logged!\n";
@@ -128,7 +127,6 @@ Status processCommand(const std::string& line, std::fstream& logFile,
         // TODO: When OK?
         logFile << username << " "
                 << "deposit " << amount << '\n';
-        std::cout << "ok!\n";
       } else {
         printNotSupportedCommand(commands);
         return Status::UNKNOWN_COMMAND;
@@ -189,7 +187,6 @@ Status processCommand(const std::string& line, std::fstream& logFile,
         // TODO: When OK? Should user exist?
         logFile << user << " "
                 << "deposit " << amount << '\n';
-        std::cout << "ok!\n";
       } else {
         printNotSupportedCommand(commands);
         return Status::UNKNOWN_COMMAND;
@@ -301,7 +298,21 @@ int main(int, char**) {
       break;
     }
 
-    // TODO: Process different statuses
+    // Status process
+    switch (status) {
+      case Status::OK:
+        std::cout << "ok!\n";
+        break;
+      case Status::NOT_LOGGED:
+        std::cout << "not logged!\n";
+        break;
+      case Status::UNKNOWN_USER:
+        std::cout << "unknown user!\n";
+        break;
+      case Status::EMPTY:
+        std::cout << "empty command line!\n";
+        break;
+    }
 
   }  // end command loop
 
