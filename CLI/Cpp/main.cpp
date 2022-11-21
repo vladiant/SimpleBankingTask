@@ -285,7 +285,8 @@ int main(int, char**) {
   auto balances = readBallances(fileName);
 
   // Commands loop
-  while (true) {
+  bool shouldProcess = true;
+  while (shouldProcess) {
     std::string line;
     // Command prompt
     std::cout << "$ ";
@@ -293,10 +294,6 @@ int main(int, char**) {
 
     // TODO: Refactor balance reading
     const auto status = processCommand(line, logFile, username, balances);
-
-    if (Status::LOGOUT == status) {
-      break;
-    }
 
     // Status process
     switch (status) {
@@ -311,6 +308,13 @@ int main(int, char**) {
         break;
       case Status::EMPTY:
         std::cout << "empty command line!\n";
+        break;
+      case Status::LOGOUT:
+        std::cout << "logout!\n";
+        shouldProcess = false;
+        break;
+      case Status::UNKNOWN_COMMAND:
+        std::cout << "unknown command!\n";
         break;
     }
 
