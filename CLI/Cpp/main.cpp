@@ -1,4 +1,5 @@
 #include <fstream>
+#include <functional>
 #include <iostream>
 #include <map>
 #include <sstream>
@@ -52,6 +53,44 @@ enum class Status {
   OK
 };
 
+void processHistory(std::fstream& logFile) {
+  // Flush existing data
+  logFile.flush();
+  std::fstream historyFile(fileName, std::ios_base::in);
+  while (historyFile) {
+    std::string log;
+    std::getline(historyFile, log);
+    if (log.empty()) {
+      break;
+    }
+    std::cout << log << '\n';
+  }
+}
+
+Status processWithdraw(const std::string& argument,
+                       std::function<void(BalanceType)> process) {
+  std::stringstream ss(argument);
+  BalanceType amount;
+  ss >> amount;
+  // TODO: Handle not defined function
+  if (process) {
+    process(amount);
+  };
+  return Status::OK;
+}
+
+Status processDeposit(const std::string& argument,
+                      std::function<void(BalanceType)> process) {
+  std::stringstream ss(argument);
+  BalanceType amount;
+  ss >> amount;
+  // TODO: Handle not defined function
+  if (process) {
+    process(amount);
+  };
+  return Status::OK;
+}
+
 Status processCommand(const std::string& line, std::fstream& logFile,
                       std::string& username, Balances& balances) {
   const auto commands = extractCommands(line);
@@ -72,17 +111,7 @@ Status processCommand(const std::string& line, std::fstream& logFile,
         username.clear();
         return Status::LOGOUT;
       } else if (command == "history") {
-        // Flush existing data
-        logFile.flush();
-        std::fstream historyFile(fileName, std::ios_base::in);
-        while (historyFile) {
-          std::string log;
-          std::getline(historyFile, log);
-          if (log.empty()) {
-            break;
-          }
-          std::cout << log << '\n';
-        }
+        processHistory(logFile);
       } else {
         printNotSupportedCommand(commands);
         return Status::UNKNOWN_COMMAND;
@@ -108,25 +137,26 @@ Status processCommand(const std::string& line, std::fstream& logFile,
         }
         // TODO: Handle insufficient amount
         // TODO: Which user?
-        std::stringstream ss(commands[1]);
-        BalanceType amount;
-        ss >> amount;
-        balances[username] -= amount;
-        logFile << username << " "
-                << "withdraw " << amount << '\n';
+        processWithdraw(commands[1],
+                        [&balances, username, &logFile](BalanceType amount) {
+                          balances[username] -= amount;
+                          logFile << username << " "
+                                  << "withdraw " << amount << '\n';
+                        });
+
       } else if (command == "deposit") {
         if (username.empty()) {
           std::cout << "No user logged!\n";
           return Status::NOT_LOGGED;
         }
-        std::stringstream ss(commands[1]);
-        BalanceType amount;
-        ss >> amount;
-        balances[username] += amount;
         // TODO: Which user?
         // TODO: When OK?
-        logFile << username << " "
-                << "deposit " << amount << '\n';
+        processDeposit(commands[1],
+                       [&balances, username, &logFile](BalanceType amount) {
+                         balances[username] += amount;
+                         logFile << username << " "
+                                 << "deposit " << amount << '\n';
+                       });
       } else {
         printNotSupportedCommand(commands);
         return Status::UNKNOWN_COMMAND;
@@ -234,15 +264,15 @@ auto readBallances(const std::string& fileName) {
     switch (commands.size()) {
       case 3:
         if (command == "withdraw") {
-          std::stringstream ss(commands[2]);
-          BalanceType amount;
-          ss >> amount;
-          balances[currentUsername] -= amount;
+          processWithdraw(commands[2],
+                          [&balances, currentUsername](BalanceType amount) {
+                            balances[currentUsername] -= amount;
+                          });
         } else if (command == "deposit") {
-          std::stringstream ss(commands[2]);
-          BalanceType amount;
-          ss >> amount;
-          balances[currentUsername] += amount;
+          processDeposit(commands[2],
+                         [&balances, currentUsername](BalanceType amount) {
+                           balances[currentUsername] += amount;
+                         });
         }
         break;
       case 5:
