@@ -53,7 +53,7 @@ enum class Status {
   OK
 };
 
-void processHistory(std::fstream& logFile) {
+Status processHistory(std::fstream& logFile) {
   // Flush existing data
   logFile.flush();
   std::fstream historyFile(fileName, std::ios_base::in);
@@ -65,6 +65,7 @@ void processHistory(std::fstream& logFile) {
     }
     std::cout << log << '\n';
   }
+  return Status::OK;
 }
 
 Status processWithdraw(const std::string& argument,
