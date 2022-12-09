@@ -10,6 +10,12 @@ using Balances = std::map<std::string, BalanceType>;
 
 constexpr auto fileName = "account_history.txt";
 
+struct Context {
+  std::string username;
+  Balances balances;
+  std::optional<std::fstream> logFile;
+};
+
 void printCommand(const std::vector<std::string>& commands) {
   for (const auto& command : commands) {
     std::cout << command << " ";
@@ -53,9 +59,12 @@ enum class Status {
   OK
 };
 
-Status processHistory(std::fstream& logFile) {
+Status processHistory(Context& context) {
   // Flush existing data
-  logFile.flush();
+  if (context.logFile) {
+    context.logFile->flush();
+  }
+
   std::fstream historyFile(fileName, std::ios_base::in);
   while (historyFile) {
     std::string log;
@@ -92,8 +101,7 @@ Status processDeposit(const std::string& argument,
   return Status::OK;
 }
 
-Status processCommand(const std::string& line, std::fstream& logFile,
-                      std::string& username, Balances& balances) {
+Status processCommand(const std::string& line, Context& context) {
   const auto commands = extractCommands(line);
 
   // Skip empty command line
@@ -107,12 +115,15 @@ Status processCommand(const std::string& line, std::fstream& logFile,
   switch (commands.size()) {
     case 1:
       if (command == "logout") {
-        logFile << username << " "
-                << "logout" << '\n';
-        username.clear();
+        if (context.logFile) {
+          *context.logFile << context.username << " "
+                           << "logout" << '\n';
+          context.username.clear();
+        }
+
         return Status::LOGOUT;
       } else if (command == "history") {
-        processHistory(logFile);
+        processHistory(context);
       } else {
         printNotSupportedCommand(commands);
         return Status::UNKNOWN_COMMAND;
@@ -122,42 +133,46 @@ Status processCommand(const std::string& line, std::fstream& logFile,
       if (command == "get") {
         const std::string subCommand{commands[1]};
         if (subCommand == "balance") {
-          if (username.empty()) {
+          if (context.username.empty()) {
             std::cout << "No user logged!\n";
             return Status::NOT_LOGGED;
           }
-          std::cout << balances[username] << '\n';
+          std::cout << context.balances[context.username] << '\n';
         } else {
           printNotSupportedCommand(commands);
           return Status::UNKNOWN_COMMAND;
         }
       } else if (command == "withdraw") {
-        if (username.empty()) {
+        if (context.username.empty()) {
           std::cout << "No user logged!\n";
           return Status::NOT_LOGGED;
         }
         // TODO: Handle insufficient amount
         // TODO: Which user?
-        processWithdraw(commands[1],
-                        [&balances, username, &logFile](BalanceType amount) {
-                          balances[username] -= amount;
-                          logFile << username << " "
-                                  << "withdraw " << amount << '\n';
-                        });
+        processWithdraw(commands[1], [&context](BalanceType amount) {
+          context.balances[context.username] -= amount;
+          if (!context.logFile) {
+            return;
+          }
+          *context.logFile << context.username << " "
+                           << "withdraw " << amount << '\n';
+        });
 
       } else if (command == "deposit") {
-        if (username.empty()) {
+        if (context.username.empty()) {
           std::cout << "No user logged!\n";
           return Status::NOT_LOGGED;
         }
         // TODO: Which user?
         // TODO: When OK?
-        processDeposit(commands[1],
-                       [&balances, username, &logFile](BalanceType amount) {
-                         balances[username] += amount;
-                         logFile << username << " "
-                                 << "deposit " << amount << '\n';
-                       });
+        processDeposit(commands[1], [&context](BalanceType amount) {
+          context.balances[context.username] += amount;
+          if (!context.logFile) {
+            return;
+          }
+          *context.logFile << context.username << " "
+                           << "deposit " << amount << '\n';
+        });
       } else {
         printNotSupportedCommand(commands);
         return Status::UNKNOWN_COMMAND;
@@ -167,11 +182,15 @@ Status processCommand(const std::string& line, std::fstream& logFile,
       if (command == "login") {
         const std::string password{commands[2]};
         // TODO: Handle password check
-        username = commands[1];
-        initializeUserBalance(username, balances);
-        std::cout << "Welcome, " << username << '\n';
-        logFile << username << " "
-                << "login " << username << " " << password << '\n';
+        context.username = commands[1];
+        initializeUserBalance(context.username, context.balances);
+        std::cout << "Welcome, " << context.username << '\n';
+        if (context.logFile) {
+          *context.logFile << context.username << " "
+                           << "login " << context.username << " " << password
+                           << '\n';
+        }
+
       } else {
         printNotSupportedCommand(commands);
         return Status::UNKNOWN_COMMAND;
@@ -179,7 +198,7 @@ Status processCommand(const std::string& line, std::fstream& logFile,
       break;
     case 4:
       if (command == "transfer") {
-        if (username.empty()) {
+        if (context.username.empty()) {
           std::cout << "No user logged!\n";
           return Status::NOT_LOGGED;
         }
@@ -195,29 +214,35 @@ Status processCommand(const std::string& line, std::fstream& logFile,
         // TODO: Handle insufficient balance
 
         // Self transfer
-        if (username == user) {
+        if (context.username == user) {
           // Ignore self transfer, no problem
           return Status::OK;
         }
 
-        if (balances.find(user) == balances.end()) {
+        if (context.balances.find(user) == context.balances.end()) {
           return Status::UNKNOWN_USER;
         }
 
-        balances[username] -= amount;
-        balances[user] += amount;
+        context.balances[context.username] -= amount;
+        context.balances[user] += amount;
 
-        logFile << username << " "
-                << "transfer " << amount << " " << subCommand << " " << user
-                << '\n';
-        std::cout << username << " "
+        if (context.logFile) {
+          *context.logFile << context.username << " "
+                           << "transfer " << amount << " " << subCommand << " "
+                           << user << '\n';
+        }
+
+        std::cout << context.username << " "
                   << "transfer " << amount << " " << subCommand << " " << user
                   << '\n';
 
         // TODO: Is transfer a deposit
         // TODO: When OK? Should user exist?
-        logFile << user << " "
-                << "deposit " << amount << '\n';
+        if (context.logFile) {
+          *context.logFile << user << " "
+                           << "deposit " << amount << '\n';
+        }
+
       } else {
         printNotSupportedCommand(commands);
         return Status::UNKNOWN_COMMAND;
@@ -303,17 +328,19 @@ auto readBallances(const std::string& fileName) {
 }
 
 int main(int, char**) {
+  Context context;
+
   // TODO: Handle processing of file
-  std::fstream logFile(
+  context.logFile.emplace(
       fileName, std::ios_base::app | std::ios_base::in | std::ios_base::out);
-  if (!logFile.is_open()) {
+  if (!context.logFile->is_open()) {
     std::cout << "Error opening " << fileName << '\n';
   }
 
   // Consider empty name as no logged user
   std::string username{};
 
-  auto balances = readBallances(fileName);
+  context.balances = readBallances(fileName);
 
   // Commands loop
   bool shouldProcess = true;
@@ -324,7 +351,7 @@ int main(int, char**) {
     std::getline(std::cin, line);
 
     // TODO: Refactor balance reading
-    const auto status = processCommand(line, logFile, username, balances);
+    const auto status = processCommand(line, context);
 
     // Status process
     switch (status) {
