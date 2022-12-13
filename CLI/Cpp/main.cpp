@@ -77,27 +77,29 @@ Status processHistory(Context& context) {
   return Status::OK;
 }
 
-Status processWithdraw(const std::string& argument,
-                       std::function<void(BalanceType)> process) {
+Status processWithdraw(const std::string& argument, Context& context) {
   std::stringstream ss(argument);
   BalanceType amount;
   ss >> amount;
-  // TODO: Handle not defined function
-  if (process) {
-    process(amount);
-  };
+  context.balances[context.username] -= amount;
+  if (!context.logFile) {
+    return Status::OK;
+  }
+  *context.logFile << context.username << " "
+                    << "withdraw " << amount << '\n';
   return Status::OK;
 }
 
-Status processDeposit(const std::string& argument,
-                      std::function<void(BalanceType)> process) {
+Status processDeposit(const std::string& argument, Context& context) {
   std::stringstream ss(argument);
   BalanceType amount;
   ss >> amount;
-  // TODO: Handle not defined function
-  if (process) {
-    process(amount);
-  };
+  context.balances[context.username] += amount;
+  if (!context.logFile) {
+    return Status::OK;
+  }
+  *context.logFile << context.username << " "
+                    << "deposit " << amount << '\n';
   return Status::OK;
 }
 
@@ -149,14 +151,7 @@ Status processCommand(const std::string& line, Context& context) {
         }
         // TODO: Handle insufficient amount
         // TODO: Which user?
-        processWithdraw(commands[1], [&context](BalanceType amount) {
-          context.balances[context.username] -= amount;
-          if (!context.logFile) {
-            return;
-          }
-          *context.logFile << context.username << " "
-                           << "withdraw " << amount << '\n';
-        });
+        processWithdraw(commands[1], context);
 
       } else if (command == "deposit") {
         if (context.username.empty()) {
@@ -165,14 +160,7 @@ Status processCommand(const std::string& line, Context& context) {
         }
         // TODO: Which user?
         // TODO: When OK?
-        processDeposit(commands[1], [&context](BalanceType amount) {
-          context.balances[context.username] += amount;
-          if (!context.logFile) {
-            return;
-          }
-          *context.logFile << context.username << " "
-                           << "deposit " << amount << '\n';
-        });
+        processDeposit(commands[1], context);
       } else {
         printNotSupportedCommand(commands);
         return Status::UNKNOWN_COMMAND;
@@ -257,8 +245,9 @@ Status processCommand(const std::string& line, Context& context) {
 }
 
 auto readBallances(const std::string& fileName) {
-  std::map<std::string, BalanceType> balances;
+  Context context;
 
+  // TODO: Process it properly under context
   std::fstream logFile(fileName, std::ios_base::in);
 
   if (!logFile.is_open()) {
@@ -281,24 +270,19 @@ auto readBallances(const std::string& fileName) {
     }
 
     // First command is the username
-    const auto& currentUsername = commands.at(0);
+    context.username = commands.at(0);
     const auto& command = commands.at(1);
 
-    initializeUserBalance(currentUsername, balances);
+    // TODO: Set it to use context
+    initializeUserBalance(context.username, context.balances);
 
     // Process command
     switch (commands.size()) {
       case 3:
         if (command == "withdraw") {
-          processWithdraw(commands[2],
-                          [&balances, currentUsername](BalanceType amount) {
-                            balances[currentUsername] -= amount;
-                          });
+          processWithdraw(commands[2], context);
         } else if (command == "deposit") {
-          processDeposit(commands[2],
-                         [&balances, currentUsername](BalanceType amount) {
-                           balances[currentUsername] += amount;
-                         });
+          processDeposit(commands[2], context);
         }
         break;
       case 5:
@@ -315,16 +299,16 @@ auto readBallances(const std::string& fileName) {
 
           // It is assumed that record is OK
           // and transfer was done to existing user.
-          initializeUserBalance(user, balances);
+          initializeUserBalance(user, context.balances);
 
-          balances[currentUsername] -= amount;
-          balances[user] += amount;
+          context.balances[context.username] -= amount;
+          context.balances[user] += amount;
         }
         break;
     }
   }
 
-  return balances;
+  return context.balances;
 }
 
 int main(int, char**) {
