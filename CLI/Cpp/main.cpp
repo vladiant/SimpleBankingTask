@@ -86,7 +86,7 @@ Status processWithdraw(const std::string& argument, Context& context) {
     return Status::OK;
   }
   *context.logFile << context.username << " "
-                    << "withdraw " << amount << '\n';
+                   << "withdraw " << amount << '\n';
   return Status::OK;
 }
 
@@ -99,7 +99,42 @@ Status processDeposit(const std::string& argument, Context& context) {
     return Status::OK;
   }
   *context.logFile << context.username << " "
-                    << "deposit " << amount << '\n';
+                   << "deposit " << amount << '\n';
+  return Status::OK;
+}
+
+Status processTransfer(const std::vector<std::string>& arguments,
+                       Context& context) {
+  // TODO: Handle improper arguments size
+  std::stringstream ss(arguments.at(0));
+  BalanceType amount;
+  ss >> amount;
+  const std::string user{arguments.at(1)};
+  // TODO: Handle insufficient balance
+
+  // Self transfer
+  if (context.username == user) {
+    // Ignore self transfer, no problem
+    return Status::OK;
+  }
+
+  // TODO: Is transfer a deposit
+  // TODO: When OK? Should user exist?
+
+  if (context.balances.find(user) == context.balances.end()) {
+    return Status::UNKNOWN_USER;
+  }
+
+  context.balances[context.username] -= amount;
+  context.balances[user] += amount;
+
+  if (!context.logFile) {
+    return Status::OK;
+  }
+
+  std::cout << context.username << " "
+            << "transfer " << amount << " to " << user << '\n';
+
   return Status::OK;
 }
 
@@ -195,41 +230,8 @@ Status processCommand(const std::string& line, Context& context) {
           printNotSupportedCommand(commands);
           return Status::UNKNOWN_COMMAND;
         }
-        std::stringstream ss(commands[1]);
-        BalanceType amount;
-        ss >> amount;
-        const std::string user{commands[3]};
-        // TODO: Handle insufficient balance
 
-        // Self transfer
-        if (context.username == user) {
-          // Ignore self transfer, no problem
-          return Status::OK;
-        }
-
-        if (context.balances.find(user) == context.balances.end()) {
-          return Status::UNKNOWN_USER;
-        }
-
-        context.balances[context.username] -= amount;
-        context.balances[user] += amount;
-
-        if (context.logFile) {
-          *context.logFile << context.username << " "
-                           << "transfer " << amount << " " << subCommand << " "
-                           << user << '\n';
-        }
-
-        std::cout << context.username << " "
-                  << "transfer " << amount << " " << subCommand << " " << user
-                  << '\n';
-
-        // TODO: Is transfer a deposit
-        // TODO: When OK? Should user exist?
-        if (context.logFile) {
-          *context.logFile << user << " "
-                           << "deposit " << amount << '\n';
-        }
+        processTransfer({commands[1], commands[3]}, context);
 
       } else {
         printNotSupportedCommand(commands);
@@ -292,17 +294,14 @@ auto readBallances(const std::string& fileName) {
             printNotSupportedCommand(commands);
             continue;
           }
-          std::stringstream ss(commands[2]);
-          BalanceType amount;
-          ss >> amount;
+
           const std::string user{commands[4]};
 
           // It is assumed that record is OK
           // and transfer was done to existing user.
           initializeUserBalance(user, context.balances);
 
-          context.balances[context.username] -= amount;
-          context.balances[user] += amount;
+          processTransfer({commands[2], user}, context);
         }
         break;
     }
