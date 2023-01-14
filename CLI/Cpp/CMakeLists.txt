@@ -2,15 +2,42 @@ cmake_minimum_required(VERSION 3.10)
 
 project(TaskCppCLI)
 
+# Library
+add_library(
+    BankingLib
+    lib/include/types.hpp
+    lib/include/commands.hpp
+    lib/include/controller.hpp
+    lib/include/utils.hpp
+    lib/src/commands.cpp
+    lib/src/utils.cpp
+    lib/src/controller.cpp
+)
+
+set_target_properties(
+    BankingLib
+    PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED YES
+        CXX_EXTENSIONS NO
+        LINKER_LANGUAGE CXX
+)
+
+target_compile_options(
+    BankingLib
+    PRIVATE
+         $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
+         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
+)
+
+target_include_directories(
+    BankingLib
+    PUBLIC
+        lib/include
+)
+
 add_executable(
     ${PROJECT_NAME}
-    types.hpp
-    commands.hpp
-    commands.cpp
-    utils.hpp
-    utils.cpp
-    controller.hpp
-    controller.cpp
     main.cpp
 )
 
@@ -27,5 +54,11 @@ target_compile_options(
     PRIVATE
          $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
+)
+
+target_link_libraries(
+    ${PROJECT_NAME}
+    PRIVATE
+        BankingLib
 )
 
