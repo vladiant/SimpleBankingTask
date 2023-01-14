@@ -6,35 +6,9 @@
 
 #include "commands.hpp"
 #include "types.hpp"
+#include "utils.hpp"
 
 constexpr auto fileName = "account_history.txt";
-
-void printCommand(const std::vector<std::string>& commands) {
-  for (const auto& command : commands) {
-    std::cout << command << " ";
-  }
-  std::cout << '\n';
-}
-
-void printNotSupportedCommand(const std::vector<std::string>& commands) {
-  std::cout << "Command not supported: ";
-  printCommand(commands);
-}
-
-std::vector<std::string> extractCommands(const std::string& line) {
-  std::istringstream inputLine{line};
-  std::vector<std::string> commands;
-
-  for (std::string command; std::getline(inputLine, command, ' ');) {
-    if (command.empty()) {
-      continue;
-    }
-
-    commands.emplace_back(std::move(command));
-  }
-
-  return commands;
-}
 
 Status processCommand(const std::string& line, Context& context) {
   const auto commands = extractCommands(line);

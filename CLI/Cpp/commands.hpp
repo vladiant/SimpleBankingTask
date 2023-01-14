@@ -5,8 +5,6 @@
 
 #include "types.hpp"
 
-void initializeUserBalance(const std::string& user, Balances& balances);
-
 Status processHistory(const Arguments& arguments, Context& context);
 
 Status processWithdraw(const Arguments& arguments, Context& context);

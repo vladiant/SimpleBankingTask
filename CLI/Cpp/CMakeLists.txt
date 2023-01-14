@@ -7,6 +7,8 @@ add_executable(
     types.hpp
     commands.hpp
     commands.cpp
+    utils.hpp
+    utils.cpp
     main.cpp
 )
 

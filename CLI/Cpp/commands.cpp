@@ -3,13 +3,6 @@
 #include <iostream>
 #include <sstream>
 
-void initializeUserBalance(const std::string& user, Balances& balances) {
-  const auto it = balances.find(user);
-  if (it == balances.end()) {
-    balances[user] = 0;
-  }
-}
-
 Status processHistory(const Arguments& arguments, Context& context) {
   // TODO: Handle improper arguments size
   const auto fileName = arguments.at(0);
