@@ -36,6 +36,7 @@ target_include_directories(
         lib/include
 )
 
+# CLI app
 add_executable(
     ${PROJECT_NAME}
     main.cpp
@@ -62,3 +63,30 @@ target_link_libraries(
         BankingLib
 )
 
+# Tests
+include(CTest)
+
+add_executable(
+    TestBankingLib
+    test/main.cpp
+)
+
+set_target_properties(
+    TestBankingLib
+    PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED YES
+        CXX_EXTENSIONS NO
+)
+
+target_include_directories(
+    TestBankingLib
+    PRIVATE
+        test
+)
+
+target_link_libraries(
+    TestBankingLib
+    PRIVATE
+        BankingLib
+)
