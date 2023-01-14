@@ -4,6 +4,7 @@ project(TaskCppCLI)
 
 add_executable(
     ${PROJECT_NAME}
+    types.hpp
     main.cpp
 )
 

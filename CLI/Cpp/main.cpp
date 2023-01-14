@@ -1,20 +1,12 @@
 #include <fstream>
 #include <functional>
 #include <iostream>
-#include <map>
 #include <sstream>
 #include <vector>
 
-using BalanceType = float;
-using Balances = std::map<std::string, BalanceType>;
+#include "types.hpp"
 
 constexpr auto fileName = "account_history.txt";
-
-struct Context {
-  std::string username;
-  Balances balances;
-  std::optional<std::fstream> logFile;
-};
 
 void printCommand(const std::vector<std::string>& commands) {
   for (const auto& command : commands) {
@@ -49,15 +41,6 @@ void initializeUserBalance(const std::string& user, Balances& balances) {
     balances[user] = 0;
   }
 }
-
-enum class Status {
-  EMPTY,
-  UNKNOWN_COMMAND,
-  UNKNOWN_USER,
-  LOGOUT,
-  NOT_LOGGED,
-  OK
-};
 
 Status processHistory(const std::vector<std::string>&, Context& context) {
   // Flush existing data
