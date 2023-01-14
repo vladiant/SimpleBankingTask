@@ -59,7 +59,7 @@ enum class Status {
   OK
 };
 
-Status processHistory(Context& context) {
+Status processHistory(const std::vector<std::string>&, Context& context) {
   // Flush existing data
   if (context.logFile) {
     context.logFile->flush();
@@ -77,8 +77,10 @@ Status processHistory(Context& context) {
   return Status::OK;
 }
 
-Status processWithdraw(const std::string& argument, Context& context) {
-  std::stringstream ss(argument);
+Status processWithdraw(const std::vector<std::string>& arguments,
+                       Context& context) {
+  // TODO: Handle improper arguments size
+  std::stringstream ss(arguments.at(0));
   BalanceType amount;
   ss >> amount;
   context.balances[context.username] -= amount;
@@ -90,8 +92,10 @@ Status processWithdraw(const std::string& argument, Context& context) {
   return Status::OK;
 }
 
-Status processDeposit(const std::string& argument, Context& context) {
-  std::stringstream ss(argument);
+Status processDeposit(const std::vector<std::string>& arguments,
+                      Context& context) {
+  // TODO: Handle improper arguments size
+  std::stringstream ss(arguments.at(0));
   BalanceType amount;
   ss >> amount;
   context.balances[context.username] += amount;
@@ -160,7 +164,7 @@ Status processCommand(const std::string& line, Context& context) {
 
         return Status::LOGOUT;
       } else if (command == "history") {
-        processHistory(context);
+        processHistory({}, context);
       } else {
         printNotSupportedCommand(commands);
         return Status::UNKNOWN_COMMAND;
@@ -186,7 +190,7 @@ Status processCommand(const std::string& line, Context& context) {
         }
         // TODO: Handle insufficient amount
         // TODO: Which user?
-        processWithdraw(commands[1], context);
+        processWithdraw({commands[1]}, context);
 
       } else if (command == "deposit") {
         if (context.username.empty()) {
@@ -195,7 +199,7 @@ Status processCommand(const std::string& line, Context& context) {
         }
         // TODO: Which user?
         // TODO: When OK?
-        processDeposit(commands[1], context);
+        processDeposit({commands[1]}, context);
       } else {
         printNotSupportedCommand(commands);
         return Status::UNKNOWN_COMMAND;
@@ -282,9 +286,9 @@ auto readBallances(const std::string& fileName) {
     switch (commands.size()) {
       case 3:
         if (command == "withdraw") {
-          processWithdraw(commands[2], context);
+          processWithdraw({commands[2]}, context);
         } else if (command == "deposit") {
-          processDeposit(commands[2], context);
+          processDeposit({commands[2]}, context);
         }
         break;
       case 5:
