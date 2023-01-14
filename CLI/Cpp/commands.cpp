@@ -3,8 +3,7 @@
 #include <iostream>
 #include <sstream>
 
-Status processHistory(const std::vector<std::string>& arguments,
-                      Context& context) {
+Status processHistory(const Arguments& arguments, Context& context) {
   // TODO: Handle improper arguments size
   const auto fileName = arguments.at(0);
 
@@ -25,8 +24,7 @@ Status processHistory(const std::vector<std::string>& arguments,
   return Status::OK;
 }
 
-Status processWithdraw(const std::vector<std::string>& arguments,
-                       Context& context) {
+Status processWithdraw(const Arguments& arguments, Context& context) {
   // TODO: Handle improper arguments size
   std::stringstream ss(arguments.at(0));
   BalanceType amount;
@@ -40,8 +38,7 @@ Status processWithdraw(const std::vector<std::string>& arguments,
   return Status::OK;
 }
 
-Status processDeposit(const std::vector<std::string>& arguments,
-                      Context& context) {
+Status processDeposit(const Arguments& arguments, Context& context) {
   // TODO: Handle improper arguments size
   std::stringstream ss(arguments.at(0));
   BalanceType amount;
@@ -55,8 +52,7 @@ Status processDeposit(const std::vector<std::string>& arguments,
   return Status::OK;
 }
 
-Status processTransfer(const std::vector<std::string>& arguments,
-                       Context& context) {
+Status processTransfer(const Arguments& arguments, Context& context) {
   // TODO: Handle improper arguments size
   std::stringstream ss(arguments.at(0));
   BalanceType amount;
