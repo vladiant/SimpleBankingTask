@@ -1,6 +1,8 @@
 #pragma once
 
+#include <fstream>
 #include <map>
+#include <optional>
 #include <string>
 
 using BalanceType = float;
