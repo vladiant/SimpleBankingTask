@@ -39,7 +39,7 @@ target_include_directories(
 # CLI app
 add_executable(
     ${PROJECT_NAME}
-    main.cpp
+    cli/main.cpp
 )
 
 set_target_properties(
