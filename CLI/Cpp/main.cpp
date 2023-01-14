@@ -57,12 +57,7 @@ Status processCommand(const std::string& line, Context& context) {
   switch (commands.size()) {
     case 1:
       if (command == "logout") {
-        if (context.logFile) {
-          *context.logFile << context.username << " "
-                           << "logout" << '\n';
-          context.username.clear();
-        }
-
+        processLogout({}, context);
         return Status::LOGOUT;
       } else if (command == "history") {
         processHistory({fileName}, context);

@@ -12,3 +12,5 @@ Status processWithdraw(const Arguments& arguments, Context& context);
 Status processDeposit(const Arguments& arguments, Context& context);
 
 Status processTransfer(const Arguments& arguments, Context& context);
+
+Status processLogout(const Arguments& arguments, Context& context);

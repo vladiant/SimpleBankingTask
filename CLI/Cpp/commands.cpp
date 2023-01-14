@@ -85,3 +85,14 @@ Status processTransfer(const Arguments& arguments, Context& context) {
 
   return Status::OK;
 }
+
+Status processLogout(const Arguments&, Context& context) {
+  // TODO: Handle improper arguments size
+  if (context.logFile) {
+    *context.logFile << context.username << " "
+                     << "logout" << '\n';
+  }
+  context.username.clear();
+
+  return Status::OK;
+}
