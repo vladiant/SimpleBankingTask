@@ -3,6 +3,13 @@
 #include <iostream>
 #include <sstream>
 
+void initializeUserBalance(const std::string& user, Balances& balances) {
+  const auto it = balances.find(user);
+  if (it == balances.end()) {
+    balances[user] = 0;
+  }
+}
+
 Status processHistory(const Arguments& arguments, Context& context) {
   // TODO: Handle improper arguments size
   const auto fileName = arguments.at(0);
@@ -93,6 +100,23 @@ Status processLogout(const Arguments&, Context& context) {
                      << "logout" << '\n';
   }
   context.username.clear();
+
+  return Status::OK;
+}
+
+Status processLogin(const Arguments& arguments, Context& context) {
+  // TODO: Handle improper arguments size
+  const std::string password{arguments[2]};
+
+  // TODO: Handle password check
+  context.username = arguments[1];
+  initializeUserBalance(context.username, context.balances);
+  std::cout << "Welcome, " << context.username << '\n';
+
+  if (context.logFile) {
+    *context.logFile << context.username << " "
+                     << "login " << context.username << " " << password << '\n';
+  }
 
   return Status::OK;
 }

@@ -36,13 +36,6 @@ std::vector<std::string> extractCommands(const std::string& line) {
   return commands;
 }
 
-void initializeUserBalance(const std::string& user, Balances& balances) {
-  const auto it = balances.find(user);
-  if (it == balances.end()) {
-    balances[user] = 0;
-  }
-}
-
 Status processCommand(const std::string& line, Context& context) {
   const auto commands = extractCommands(line);
 
@@ -103,17 +96,7 @@ Status processCommand(const std::string& line, Context& context) {
       break;
     case 3:
       if (command == "login") {
-        const std::string password{commands[2]};
-        // TODO: Handle password check
-        context.username = commands[1];
-        initializeUserBalance(context.username, context.balances);
-        std::cout << "Welcome, " << context.username << '\n';
-        if (context.logFile) {
-          *context.logFile << context.username << " "
-                           << "login " << context.username << " " << password
-                           << '\n';
-        }
-
+        processLogin({commands[1], commands[2]}, context);
       } else {
         printNotSupportedCommand(commands);
         return Status::UNKNOWN_COMMAND;
