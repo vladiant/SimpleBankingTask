@@ -3,6 +3,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "utils.hpp"
+
 Status processHistory(const Arguments& arguments, Context& context) {
   // TODO: Handle improper arguments size
   const auto fileName = arguments.at(0);

@@ -11,6 +11,7 @@ using Balances = std::map<std::string, BalanceType>;
 using Arguments = std::vector<std::string>;
 
 struct Context {
+  // Consider empty name as no logged user
   std::string username;
   Balances balances;
   std::optional<std::fstream> logFile;

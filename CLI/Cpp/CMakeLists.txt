@@ -9,6 +9,8 @@ add_executable(
     commands.cpp
     utils.hpp
     utils.cpp
+    controller.hpp
+    controller.cpp
     main.cpp
 )
 
