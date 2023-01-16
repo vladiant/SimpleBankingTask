@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(TaskCppCLI)
+project(TaskCpp)
 
 # Library
 add_library(
@@ -38,12 +38,12 @@ target_include_directories(
 
 # CLI app
 add_executable(
-    ${PROJECT_NAME}
+    CliBanking
     cli/main.cpp
 )
 
 set_target_properties(
-    ${PROJECT_NAME}
+    CliBanking
     PROPERTIES
         CXX_STANDARD 17
         CXX_STANDARD_REQUIRED YES
@@ -51,14 +51,14 @@ set_target_properties(
 )
 
 target_compile_options(
-    ${PROJECT_NAME}
+    CliBanking
     PRIVATE
          $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
 )
 
 target_link_libraries(
-    ${PROJECT_NAME}
+    CliBanking
     PRIVATE
         BankingLib
 )
