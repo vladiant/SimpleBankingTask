@@ -106,7 +106,6 @@ Status processLogin(const Arguments& arguments, Context& context) {
   // TODO: Handle password check
   context.username = arguments[1];
   initializeUserBalance(context.username, context.balances);
-  std::cout << "Welcome, " << context.username << '\n';
 
   if (context.logFile) {
     *context.logFile << context.username << " "

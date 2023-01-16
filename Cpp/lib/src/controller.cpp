@@ -68,6 +68,7 @@ Status processCommand(const std::string& line, const std::string& fileName,
     case 3:
       if (command == "login") {
         processLogin({commands[1], commands[2]}, context);
+        std::cout << "Welcome, " << context.username << '\n';
       } else {
         printNotSupportedCommand(commands);
         return Status::UNKNOWN_COMMAND;
