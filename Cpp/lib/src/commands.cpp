@@ -21,7 +21,9 @@ Status processHistory(const Arguments& arguments, Context& context) {
     if (log.empty()) {
       break;
     }
-    std::cout << log << '\n';
+    if (context.output) {
+      *context.output << log << '\n';
+    }
   }
   return Status::OK;
 }
@@ -78,12 +80,16 @@ Status processTransfer(const Arguments& arguments, Context& context) {
   context.balances[context.username] -= amount;
   context.balances[user] += amount;
 
-  if (!context.logFile) {
-    return Status::OK;
+  if (context.logFile) {
+    *context.logFile << context.username << " "
+                     << "transfer " << amount << " to " << user << '\n';
   }
 
-  std::cout << context.username << " "
-            << "transfer " << amount << " to " << user << '\n';
+  // TODO: Fix duplication
+  if (context.output) {
+    *context.output << context.username << " "
+                    << "transfer " << amount << " to " << user << '\n';
+  }
 
   return Status::OK;
 }

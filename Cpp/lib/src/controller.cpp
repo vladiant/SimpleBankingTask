@@ -35,17 +35,23 @@ Status processCommand(const std::string& line, const std::string& fileName,
         const std::string subCommand{commands[1]};
         if (subCommand == "balance") {
           if (context.username.empty()) {
-            std::cout << "No user logged!\n";
+            if (context.output) {
+              *context.output << "No user logged!\n";
+            }
             return Status::NOT_LOGGED;
           }
-          std::cout << context.balances[context.username] << '\n';
+          if (context.output) {
+            *context.output << context.balances[context.username] << '\n';
+          }
         } else {
           printNotSupportedCommand(commands);
           return Status::UNKNOWN_COMMAND;
         }
       } else if (command == "withdraw") {
         if (context.username.empty()) {
-          std::cout << "No user logged!\n";
+          if (context.output) {
+            *context.output << "No user logged!\n";
+          }
           return Status::NOT_LOGGED;
         }
         // TODO: Handle insufficient amount
@@ -54,7 +60,9 @@ Status processCommand(const std::string& line, const std::string& fileName,
 
       } else if (command == "deposit") {
         if (context.username.empty()) {
-          std::cout << "No user logged!\n";
+          if (context.output) {
+            *context.output << "No user logged!\n";
+          }
           return Status::NOT_LOGGED;
         }
         // TODO: Which user?
@@ -68,7 +76,9 @@ Status processCommand(const std::string& line, const std::string& fileName,
     case 3:
       if (command == "login") {
         processLogin({commands[1], commands[2]}, context);
-        std::cout << "Welcome, " << context.username << '\n';
+        if (context.output) {
+          *context.output << "Welcome, " << context.username << '\n';
+        }
       } else {
         printNotSupportedCommand(commands);
         return Status::UNKNOWN_COMMAND;
@@ -77,7 +87,9 @@ Status processCommand(const std::string& line, const std::string& fileName,
     case 4:
       if (command == "transfer") {
         if (context.username.empty()) {
-          std::cout << "No user logged!\n";
+          if (context.output) {
+            *context.output << "No user logged!\n";
+          }
           return Status::NOT_LOGGED;
         }
         const std::string subCommand{commands[2]};
@@ -183,8 +195,10 @@ void processLoop(const std::string& fileName, Context& context) {
   bool shouldProcess = true;
   while (shouldProcess) {
     std::string line;
+    // TODO: Generic setup of input
     // Command prompt
     std::cout << "$ ";
+    // TODO: Generic setup of input
     std::getline(std::cin, line);
 
     // TODO: Refactor balance reading
@@ -193,23 +207,35 @@ void processLoop(const std::string& fileName, Context& context) {
     // Status process
     switch (status) {
       case Status::OK:
-        std::cout << "ok!\n";
+        if (context.output) {
+          *context.output << "ok!\n";
+        }
         break;
       case Status::NOT_LOGGED:
-        std::cout << "not logged!\n";
+        if (context.output) {
+          *context.output << "not logged!\n";
+        }
         break;
       case Status::UNKNOWN_USER:
-        std::cout << "unknown user!\n";
+        if (context.output) {
+          *context.output << "unknown user!\n";
+        }
         break;
       case Status::EMPTY:
-        std::cout << "empty command line!\n";
+        if (context.output) {
+          *context.output << "empty command line!\n";
+        }
         break;
       case Status::LOGOUT:
-        std::cout << "logout!\n";
+        if (context.output) {
+          *context.output << "logout!\n";
+        }
         shouldProcess = false;
         break;
       case Status::UNKNOWN_COMMAND:
-        std::cout << "unknown command!\n";
+        if (context.output) {
+          *context.output << "unknown command!\n";
+        }
         break;
     }
 
