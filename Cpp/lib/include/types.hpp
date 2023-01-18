@@ -1,6 +1,6 @@
 #pragma once
 
-#include <fstream>
+#include <iosfwd>
 #include <map>
 #include <memory>
 #include <optional>
@@ -15,8 +15,7 @@ struct Context {
   // Consider empty name as no logged user
   std::string username;
   Balances balances;
-  // TODO: General iostream
-  std::optional<std::fstream> logFile;
+  std::shared_ptr<std::iostream> logFile;
   // TODO: Consider using null object
   std::shared_ptr<std::ostream> output;
 };

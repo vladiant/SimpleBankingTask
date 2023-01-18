@@ -1,5 +1,6 @@
 #include "controller.hpp"
 
+#include <fstream>
 #include <iostream>
 
 #include "commands.hpp"
@@ -181,9 +182,9 @@ Balances readBallances(const std::string& fileName) {
 // TODO: Haindle initialization failure
 void initLoop(const std::string& fileName, Context& context) {
   // TODO: Handle processing of file
-  context.logFile.emplace(
+  context.logFile = std::make_shared<std::fstream>(
       fileName, std::ios_base::app | std::ios_base::in | std::ios_base::out);
-  if (!context.logFile->is_open()) {
+  if (!context.logFile->good()) {
     std::cout << "Error opening " << fileName << '\n';
   }
 
