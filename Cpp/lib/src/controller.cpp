@@ -200,7 +200,8 @@ void processLoop(const std::string& fileName, Context& context) {
     // Command prompt
     std::cout << "$ ";
     // TODO: Generic setup of input
-    std::getline(std::cin, line);
+    // TODO: Check if valid
+    std::getline(*context.input, line);
 
     // TODO: Refactor balance reading
     const auto status = processCommand(line, fileName, context);

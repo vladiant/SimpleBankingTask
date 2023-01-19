@@ -68,6 +68,7 @@ include(CTest)
 
 add_executable(
     TestBankingLib
+    test/test_main_requirements.cpp
     test/main.cpp
 )
 
@@ -90,3 +91,5 @@ target_link_libraries(
     PRIVATE
         BankingLib
 )
+
+add_test(NAME TestBankingLib COMMAND TestBankingLib)
