@@ -18,6 +18,8 @@ struct Context {
   std::shared_ptr<std::iostream> logFile;
   // TODO: Consider using null object
   std::shared_ptr<std::ostream> output;
+  // TODO: Consider using null object
+  std::shared_ptr<std::istream> input;
 };
 
 enum class Status {
