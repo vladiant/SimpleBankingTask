@@ -119,5 +119,5 @@ Status processLogin(const Arguments& arguments, Context& context) {
                      << "login " << context.username << " " << password << '\n';
   }
 
-  return Status::OK;
+  return Status::LOGIN;
 }

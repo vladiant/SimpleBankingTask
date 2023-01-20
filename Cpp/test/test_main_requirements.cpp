@@ -42,5 +42,5 @@ UTEST_F(MainRequirementsTest, MainRequirements_LoginLogout_Messages) {
 
   // Assert
   EXPECT_EQ(utest_fixture->output_->str(),
-            std::string("Welcome, ola\nok!\nlogout!\n"));
+            std::string("Welcome, ola\nlogout!\n"));
 }

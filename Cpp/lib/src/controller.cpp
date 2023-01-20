@@ -76,10 +76,7 @@ Status processCommand(const std::string& line, const std::string& fileName,
       break;
     case 3:
       if (command == "login") {
-        processLogin({commands[1], commands[2]}, context);
-        if (context.output) {
-          *context.output << "Welcome, " << context.username << '\n';
-        }
+        return processLogin({commands[1], commands[2]}, context);
       } else {
         printNotSupportedCommand(commands);
         return Status::UNKNOWN_COMMAND;
@@ -226,6 +223,11 @@ void processLoop(const std::string& fileName, Context& context) {
       case Status::EMPTY:
         if (context.output) {
           *context.output << "empty command line!\n";
+        }
+        break;
+      case Status::LOGIN:
+        if (context.output) {
+          *context.output << "Welcome, " << context.username << '\n';
         }
         break;
       case Status::LOGOUT:

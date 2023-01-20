@@ -26,6 +26,7 @@ enum class Status {
   EMPTY,
   UNKNOWN_COMMAND,
   UNKNOWN_USER,
+  LOGIN,
   LOGOUT,
   NOT_LOGGED,
   OK
