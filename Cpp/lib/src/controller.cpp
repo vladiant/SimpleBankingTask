@@ -193,9 +193,7 @@ void processLoop(const std::string& fileName, Context& context) {
   bool shouldProcess = true;
   while (shouldProcess) {
     std::string line;
-    // TODO: Generic setup of input
-    // Command prompt
-    std::cout << "$ ";
+    // TODO: Set command prompt "$ "
     // TODO: Generic setup of input
     // TODO: Check if valid
     std::getline(*context.input, line);
