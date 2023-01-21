@@ -1,5 +1,6 @@
 #include <utest/utest.h>
 
+#include <filesystem>
 #include <iostream>
 #include <memory>
 #include <sstream>
@@ -21,11 +22,14 @@ UTEST_F_SETUP(MainRequirementsTest) {
   static_cast<void>(utest_result);
   utest_fixture->context_ = std::make_unique<Context>();
   utest_fixture->output_ = std::make_shared<std::stringstream>();
+  EXPECT_FALSE(std::filesystem::exists(kFileName));
 }
 
 UTEST_F_TEARDOWN(MainRequirementsTest) {
   static_cast<void>(utest_result);
   static_cast<void>(utest_fixture->context_);
+  EXPECT_TRUE(std::filesystem::exists(kFileName));
+  EXPECT_TRUE(std::filesystem::remove(kFileName));
 }
 
 UTEST_F(MainRequirementsTest, MainRequirements_LoginLogout_Messages) {
