@@ -22,10 +22,9 @@ Status processCommand(const std::string& line, const std::string& fileName,
   switch (commands.size()) {
     case 1:
       if (command == "logout") {
-        processLogout({}, context);
-        return Status::LOGOUT;
+        return processLogout({}, context);
       } else if (command == "history") {
-        processHistory({fileName}, context);
+        return processHistory({fileName}, context);
       } else {
         printNotSupportedCommand(commands);
         return Status::UNKNOWN_COMMAND;
@@ -68,7 +67,7 @@ Status processCommand(const std::string& line, const std::string& fileName,
         }
         // TODO: Which user?
         // TODO: When OK?
-        processDeposit({commands[1]}, context);
+        return processDeposit({commands[1]}, context);
       } else {
         printNotSupportedCommand(commands);
         return Status::UNKNOWN_COMMAND;
@@ -96,7 +95,7 @@ Status processCommand(const std::string& line, const std::string& fileName,
           return Status::UNKNOWN_COMMAND;
         }
 
-        processTransfer({commands[1], commands[3]}, context);
+        return processTransfer({commands[1], commands[3]}, context);
 
       } else {
         printNotSupportedCommand(commands);

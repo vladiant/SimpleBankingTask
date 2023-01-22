@@ -103,7 +103,7 @@ Status processLogout(const Arguments&, Context& context) {
   }
   context.username.clear();
 
-  return Status::OK;
+  return Status::LOGOUT;
 }
 
 Status processLogin(const Arguments& arguments, Context& context) {
