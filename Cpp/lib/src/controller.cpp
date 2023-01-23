@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "commands.hpp"
+#include "queries.hpp"
 #include "utils.hpp"
 
 // TODO: Fix usage of filename - in context
@@ -32,21 +33,13 @@ Status processCommand(const std::string& line, const std::string& fileName,
       break;
     case 2:
       if (command == "get") {
-        const std::string subCommand{commands[1]};
-        if (subCommand == "balance") {
-          if (context.username.empty()) {
-            if (context.output) {
-              *context.output << "No user logged!\n";
-            }
-            return Status::NOT_LOGGED;
-          }
+        if (context.username.empty()) {
           if (context.output) {
-            *context.output << context.balances[context.username] << '\n';
+            *context.output << "No user logged!\n";
           }
-        } else {
-          printNotSupportedCommand(commands);
-          return Status::UNKNOWN_COMMAND;
+          return Status::NOT_LOGGED;
         }
+        return processGet({commands[1]}, context);
       } else if (command == "withdraw") {
         if (context.username.empty()) {
           if (context.output) {
@@ -232,6 +225,11 @@ void processLoop(const std::string& fileName, Context& context) {
           *context.output << "logout!\n";
         }
         shouldProcess = false;
+        break;
+      case Status::RESULT:
+        if (context.output) {
+          *context.output << context.result << '\n';
+        }
         break;
       case Status::UNKNOWN_COMMAND:
         if (context.output) {

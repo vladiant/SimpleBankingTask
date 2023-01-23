@@ -10,7 +10,7 @@
 namespace {
 constexpr auto kFileName = "test_account_history.txt";
 
-void utest_type_printer(const std::string& val) { std::cout << val << '\n'; }
+void utest_type_printer(const std::string& val) { std::cout << '\n' << val; }
 }  // namespace
 
 struct MainRequirementsTest {
@@ -64,5 +64,5 @@ UTEST_F(MainRequirementsTest,
 
   // Assert
   EXPECT_EQ(utest_fixture->output_->str(),
-            std::string("Welcome, ola\n0\nok!\nlogout!\n"));
+            std::string("Welcome, ola\n0\nlogout!\n"));
 }

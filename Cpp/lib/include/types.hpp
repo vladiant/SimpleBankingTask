@@ -10,6 +10,7 @@
 using BalanceType = float;
 using Balances = std::map<std::string, BalanceType>;
 using Arguments = std::vector<std::string>;
+using Result = std::string;
 
 struct Context {
   // Consider empty name as no logged user
@@ -20,6 +21,7 @@ struct Context {
   std::shared_ptr<std::ostream> output;
   // TODO: Consider using null object
   std::shared_ptr<std::istream> input;
+  Result result;
 };
 
 enum class Status {
@@ -29,5 +31,6 @@ enum class Status {
   LOGIN,
   LOGOUT,
   NOT_LOGGED,
+  RESULT,
   OK
 };

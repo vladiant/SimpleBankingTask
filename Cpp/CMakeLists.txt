@@ -7,9 +7,11 @@ add_library(
     BankingLib
     lib/include/types.hpp
     lib/include/commands.hpp
+    lib/include/queries.hpp
     lib/include/controller.hpp
     lib/include/utils.hpp
     lib/src/commands.cpp
+    lib/src/queries.cpp
     lib/src/utils.cpp
     lib/src/controller.cpp
 )
