@@ -68,7 +68,7 @@ UTEST_F(MainRequirementsTest,
 }
 
 UTEST_F(MainRequirementsTest,
-        MainRequirements_LoginDepositGetBalanceLogout_ZeroBalance) {
+        MainRequirements_LoginDepositGetBalanceLogout_DepositedBalance) {
   // Arrange
   auto& context = *utest_fixture->context_;
   context.input = std::make_shared<std::stringstream>(
@@ -83,4 +83,23 @@ UTEST_F(MainRequirementsTest,
   // Assert
   EXPECT_EQ(utest_fixture->output_->str(),
             std::string("Welcome, ola\n0\nok!\n100\nlogout!\n"));
+}
+
+UTEST_F(MainRequirementsTest,
+        MainRequirements_LoginDepositWithdrawGetBalanceLogout_TotalBalance) {
+  // Arrange
+  auto& context = *utest_fixture->context_;
+  context.input = std::make_shared<std::stringstream>(
+      "login ola 123\nget balance\ndeposit 100\nget balance\nwithdraw 25\nget "
+      "balance\nlogout\n");
+  context.output = utest_fixture->output_;
+
+  initLoop(kFileName, context);
+
+  // Act
+  processLoop(kFileName, context);
+
+  // Assert
+  EXPECT_EQ(utest_fixture->output_->str(),
+            std::string("Welcome, ola\n0\nok!\n100\nok!\n75\nlogout!\n"));
 }
