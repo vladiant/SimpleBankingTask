@@ -8,9 +8,33 @@
 #include "controller.hpp"
 
 namespace {
+
 constexpr auto kFileName = "test_account_history.txt";
 
+constexpr auto kLogin = "login";
+constexpr auto kLogout = "logout";
+constexpr auto kGetBalance = "get balance";
+constexpr auto kDeposit = "deposit";
+constexpr auto kWithdraw = "withdraw";
+
+// Separator
+constexpr auto kSep{" "};
+// End of Command
+constexpr auto kEOC{"\n"};
+
+constexpr auto kTestUsername = "ola";
+constexpr auto kTestPassword = "123";
+constexpr int kTestDeposit = 100;
+constexpr int kTestWithdraw = 25;
+
+constexpr auto kLoginResponseStart = "Welcome, ";
+constexpr auto kLogoutResponse = "logout!";
+constexpr auto kOkResponse = "ok!";
+// End of Response
+constexpr auto kEOR{"\n"};
+
 void utest_type_printer(const std::string& val) { std::cout << '\n' << val; }
+
 }  // namespace
 
 struct MainRequirementsTest {
@@ -34,9 +58,13 @@ UTEST_F_TEARDOWN(MainRequirementsTest) {
 
 UTEST_F(MainRequirementsTest, MainRequirements_LoginLogout_Messages) {
   // Arrange
+  auto command_buffer = std::make_shared<std::stringstream>();
+  *command_buffer << kLogin << kSep << kTestUsername << kSep << kTestPassword
+                  << kEOC;
+  *command_buffer << kLogout << kEOC;
+
   auto& context = *utest_fixture->context_;
-  context.input =
-      std::make_shared<std::stringstream>("login ola 123\nlogout\n");
+  context.input = command_buffer;
   context.output = utest_fixture->output_;
 
   initLoop(kFileName, context);
@@ -45,16 +73,23 @@ UTEST_F(MainRequirementsTest, MainRequirements_LoginLogout_Messages) {
   processLoop(kFileName, context);
 
   // Assert
-  EXPECT_EQ(utest_fixture->output_->str(),
-            std::string("Welcome, ola\nlogout!\n"));
+  std::stringstream expectedResponse;
+  expectedResponse << kLoginResponseStart << kTestUsername << kEOR;
+  expectedResponse << kLogoutResponse << kEOR;
+  EXPECT_EQ(utest_fixture->output_->str(), expectedResponse.str());
 }
 
 UTEST_F(MainRequirementsTest,
         MainRequirements_LoginGetBalanceLogout_ZeroBalance) {
   // Arrange
+  auto command_buffer = std::make_shared<std::stringstream>();
+  *command_buffer << kLogin << kSep << kTestUsername << kSep << kTestPassword
+                  << kEOC;
+  *command_buffer << kGetBalance << kEOC;
+  *command_buffer << kLogout << kEOC;
+
   auto& context = *utest_fixture->context_;
-  context.input = std::make_shared<std::stringstream>(
-      "login ola 123\nget balance\nlogout\n");
+  context.input = command_buffer;
   context.output = utest_fixture->output_;
 
   initLoop(kFileName, context);
@@ -63,16 +98,26 @@ UTEST_F(MainRequirementsTest,
   processLoop(kFileName, context);
 
   // Assert
-  EXPECT_EQ(utest_fixture->output_->str(),
-            std::string("Welcome, ola\n0\nlogout!\n"));
+  std::stringstream expectedResponse;
+  expectedResponse << kLoginResponseStart << kTestUsername << kEOR;
+  expectedResponse << 0 << kEOR;
+  expectedResponse << kLogoutResponse << kEOR;
+  EXPECT_EQ(utest_fixture->output_->str(), expectedResponse.str());
 }
 
 UTEST_F(MainRequirementsTest,
         MainRequirements_LoginDepositGetBalanceLogout_DepositedBalance) {
   // Arrange
+  auto command_buffer = std::make_shared<std::stringstream>();
+  *command_buffer << kLogin << kSep << kTestUsername << kSep << kTestPassword
+                  << kEOC;
+  *command_buffer << kGetBalance << kEOC;
+  *command_buffer << kDeposit << kSep << kTestDeposit << kEOC;
+  *command_buffer << kGetBalance << kEOC;
+  *command_buffer << kLogout << kEOC;
+
   auto& context = *utest_fixture->context_;
-  context.input = std::make_shared<std::stringstream>(
-      "login ola 123\nget balance\ndeposit 100\nget balance\nlogout\n");
+  context.input = command_buffer;
   context.output = utest_fixture->output_;
 
   initLoop(kFileName, context);
@@ -81,17 +126,30 @@ UTEST_F(MainRequirementsTest,
   processLoop(kFileName, context);
 
   // Assert
-  EXPECT_EQ(utest_fixture->output_->str(),
-            std::string("Welcome, ola\n0\nok!\n100\nlogout!\n"));
+  std::stringstream expectedResponse;
+  expectedResponse << kLoginResponseStart << kTestUsername << kEOR;
+  expectedResponse << 0 << kEOR;
+  expectedResponse << kOkResponse << kEOR;
+  expectedResponse << kTestDeposit << kEOR;
+  expectedResponse << kLogoutResponse << kEOR;
+  EXPECT_EQ(utest_fixture->output_->str(), expectedResponse.str());
 }
 
 UTEST_F(MainRequirementsTest,
         MainRequirements_LoginDepositWithdrawGetBalanceLogout_TotalBalance) {
   // Arrange
+  auto command_buffer = std::make_shared<std::stringstream>();
+  *command_buffer << kLogin << kSep << kTestUsername << kSep << kTestPassword
+                  << kEOC;
+  *command_buffer << kGetBalance << kEOC;
+  *command_buffer << kDeposit << kSep << kTestDeposit << kEOC;
+  *command_buffer << kGetBalance << kEOC;
+  *command_buffer << kWithdraw << kSep << kTestWithdraw << kEOC;
+  *command_buffer << kGetBalance << kEOC;
+  *command_buffer << kLogout << kEOC;
+
   auto& context = *utest_fixture->context_;
-  context.input = std::make_shared<std::stringstream>(
-      "login ola 123\nget balance\ndeposit 100\nget balance\nwithdraw 25\nget "
-      "balance\nlogout\n");
+  context.input = command_buffer;
   context.output = utest_fixture->output_;
 
   initLoop(kFileName, context);
@@ -100,6 +158,13 @@ UTEST_F(MainRequirementsTest,
   processLoop(kFileName, context);
 
   // Assert
-  EXPECT_EQ(utest_fixture->output_->str(),
-            std::string("Welcome, ola\n0\nok!\n100\nok!\n75\nlogout!\n"));
+  std::stringstream expectedResponse;
+  expectedResponse << kLoginResponseStart << kTestUsername << kEOR;
+  expectedResponse << 0 << kEOR;
+  expectedResponse << kOkResponse << kEOR;
+  expectedResponse << kTestDeposit << kEOR;
+  expectedResponse << kOkResponse << kEOR;
+  expectedResponse << kTestDeposit - kTestWithdraw << kEOR;
+  expectedResponse << kLogoutResponse << kEOR;
+  EXPECT_EQ(utest_fixture->output_->str(), expectedResponse.str());
 }
