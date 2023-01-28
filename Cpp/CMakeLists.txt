@@ -70,6 +70,8 @@ include(CTest)
 
 add_executable(
     TestBankingLib
+    test/testing_utils.hpp
+    test/testing_utils.cpp
     test/test_main_requirements.cpp
     test/main.cpp
 )

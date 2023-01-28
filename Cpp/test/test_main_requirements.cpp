@@ -6,36 +6,26 @@
 #include <sstream>
 
 #include "controller.hpp"
+#include "testing_utils.hpp"
 
-namespace {
+using Test::Data::kFileName;
+using Test::Data::kTestDeposit;
+using Test::Data::kTestPassword;
+using Test::Data::kTestUsername;
+using Test::Data::kTestWithdraw;
 
-constexpr auto kFileName = "test_account_history.txt";
+using Test::Commands::kDeposit;
+using Test::Commands::kEOC;
+using Test::Commands::kGetBalance;
+using Test::Commands::kLogin;
+using Test::Commands::kLogout;
+using Test::Commands::kSep;
+using Test::Commands::kWithdraw;
 
-constexpr auto kLogin = "login";
-constexpr auto kLogout = "logout";
-constexpr auto kGetBalance = "get balance";
-constexpr auto kDeposit = "deposit";
-constexpr auto kWithdraw = "withdraw";
-
-// Separator
-constexpr auto kSep{" "};
-// End of Command
-constexpr auto kEOC{"\n"};
-
-constexpr auto kTestUsername = "ola";
-constexpr auto kTestPassword = "123";
-constexpr int kTestDeposit = 100;
-constexpr int kTestWithdraw = 25;
-
-constexpr auto kLoginResponseStart = "Welcome, ";
-constexpr auto kLogoutResponse = "logout!";
-constexpr auto kOkResponse = "ok!";
-// End of Response
-constexpr auto kEOR{"\n"};
-
-void utest_type_printer(const std::string& val) { std::cout << '\n' << val; }
-
-}  // namespace
+using Test::Responses::kEOR;
+using Test::Responses::kLoginResponseStart;
+using Test::Responses::kLogoutResponse;
+using Test::Responses::kOkResponse;
 
 struct MainRequirementsTest {
   std::unique_ptr<Context> context_;
