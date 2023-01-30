@@ -87,7 +87,7 @@ set_target_properties(
 target_include_directories(
     TestBankingLib
     PRIVATE
-        test
+        third_party
 )
 
 target_link_libraries(
@@ -124,7 +124,7 @@ target_compile_options(
 target_include_directories(
     TcpBankingServer 
     PUBLIC 
-      tcp/asio
+      third_party/asio
 )
 
 target_link_libraries(
@@ -158,7 +158,7 @@ target_compile_options(
 target_include_directories(
     TcpBankingClient 
     PUBLIC 
-      tcp/asio
+      third_party/asio
 )
 
 target_link_libraries(
