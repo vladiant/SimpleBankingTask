@@ -167,3 +167,73 @@ target_link_libraries(
         Threads::Threads
         BankingLib
 )
+
+# UDP server
+find_package(Threads REQUIRED)
+
+add_executable(
+    UdpBankingServer
+    udp/server.cpp
+)
+
+set_target_properties(
+    UdpBankingServer
+    PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED YES
+        CXX_EXTENSIONS NO
+)
+
+target_compile_options(
+    UdpBankingServer
+    PRIVATE
+         $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
+         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
+)
+
+target_include_directories(
+    UdpBankingServer 
+    PUBLIC 
+      third_party/asio
+)
+
+target_link_libraries(
+    UdpBankingServer
+    PRIVATE
+        Threads::Threads
+        BankingLib
+)
+
+# UDP sample client
+add_executable(
+    UdpBankingClient
+    udp/client.cpp
+)
+
+set_target_properties(
+    UdpBankingClient
+    PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED YES
+        CXX_EXTENSIONS NO
+)
+
+target_compile_options(
+    UdpBankingClient
+    PRIVATE
+         $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
+         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
+)
+
+target_include_directories(
+    UdpBankingClient 
+    PUBLIC 
+      third_party/asio
+)
+
+target_link_libraries(
+    UdpBankingClient
+    PRIVATE
+        Threads::Threads
+        BankingLib
+)
