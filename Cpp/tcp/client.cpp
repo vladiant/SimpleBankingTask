@@ -19,26 +19,38 @@ int main(int argc, char* argv[]) {
     tcp::resolver::results_type endpoints =
         resolver.resolve(argv[1], std::to_string(BANKING_PORT));
 
-    tcp::socket socket(io_context);
-    asio::connect(socket, endpoints);
+    std::cout << "Enter ESC to leave the command prompt\n";
 
-    for (;;) {
-      std::array<char, 128> buf;
-      asio::error_code error;
+    for (std::string request; request != "\x1B";) {
+      tcp::socket socket(io_context);
+      asio::connect(socket, endpoints);
 
-      std::string request = "Request\n";
-      socket.write_some(asio::buffer(request), error);
-      if (error) throw asio::system_error(error);
+      std::cout << "$ ";
+      std::getline(std::cin, request);
 
-      size_t len = socket.read_some(asio::buffer(buf), error);
+      for (;;) {
+        std::array<char, 128> buf;
+        asio::error_code error;
 
-      if (error == asio::error::eof) {
-        std::cout << "Connection cleanly closed.\n";
-        break;
-      } else if (error)
-        throw asio::system_error(error);  // Some other error.
+        socket.write_some(asio::buffer(request), error);
+        if (error) {
+          std::cout << "Sent error\n";
+          throw asio::system_error(error);
+        }
 
-      std::cout.write(buf.data(), len);
+        size_t len = socket.read_some(asio::buffer(buf), error);
+
+        if (error == asio::error::eof) {
+          // Connection cleanly closed
+          break;
+        } else if (error) {
+          std::cout << "Receive error\n";
+          throw asio::system_error(error);  // Some other error.
+        }
+
+        std::cout.write(buf.data(), len);
+        std::cout << '\n';
+      }
     }
   } catch (asio::system_error& e) {
     std::cerr << "TCP exception: " << e.what() << std::endl;
