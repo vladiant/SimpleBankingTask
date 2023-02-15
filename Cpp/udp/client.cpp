@@ -20,20 +20,26 @@ int main(int argc, char* argv[]) {
         *resolver.resolve(udp::v4(), argv[1], std::to_string(BANKING_PORT))
              .begin();
 
-    udp::socket socket(io_context);
-    socket.open(udp::v4());
+    std::cout << "Enter ESC to leave the command prompt\n";
 
-    std::string request = "Request\n";
-    socket.send_to(asio::buffer(request), receiver_endpoint);
+    for (std::string request; request != "\x1B";) {
+      udp::socket socket(io_context);
+      socket.open(udp::v4());
 
-    std::cout << "Request sent\n";
+      std::cout << "$ ";
+      std::getline(std::cin, request);
 
-    std::array<char, 128> recv_buf;
-    udp::endpoint sender_endpoint;
-    size_t len = socket.receive_from(asio::buffer(recv_buf), sender_endpoint);
+      socket.send_to(asio::buffer(request), receiver_endpoint);
 
-    std::cout.write(recv_buf.data(), len);
+      std::cout << "Request sent\n";
 
+      std::array<char, 128> recv_buf;
+      udp::endpoint sender_endpoint;
+      size_t len = socket.receive_from(asio::buffer(recv_buf), sender_endpoint);
+
+      std::cout.write(recv_buf.data(), len);
+      std::cout << '\n';
+    }
   } catch (asio::system_error& e) {
     std::cerr << "UDP exception: " << e.what() << std::endl;
   }
