@@ -165,7 +165,6 @@ target_link_libraries(
     TcpBankingClient
     PRIVATE
         Threads::Threads
-        BankingLib
 )
 
 # UDP server
@@ -235,5 +234,4 @@ target_link_libraries(
     UdpBankingClient
     PRIVATE
         Threads::Threads
-        BankingLib
 )
