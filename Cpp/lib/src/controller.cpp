@@ -193,50 +193,43 @@ void processLoop(const std::string& fileName, Context& context) {
     // TODO: Refactor balance reading
     const auto status = processCommand(line, fileName, context);
 
-    // Status process
-    switch (status) {
-      case Status::OK:
-        if (context.output) {
-          *context.output << "ok!\n";
-        }
-        break;
-      case Status::NOT_LOGGED:
-        if (context.output) {
-          *context.output << "not logged!\n";
-        }
-        break;
-      case Status::UNKNOWN_USER:
-        if (context.output) {
-          *context.output << "unknown user!\n";
-        }
-        break;
-      case Status::EMPTY:
-        if (context.output) {
-          *context.output << "empty command line!\n";
-        }
-        break;
-      case Status::LOGIN:
-        if (context.output) {
-          *context.output << "Welcome, " << context.username << '\n';
-        }
-        break;
-      case Status::LOGOUT:
-        if (context.output) {
-          *context.output << "logout!\n";
-        }
-        shouldProcess = false;
-        break;
-      case Status::RESULT:
-        if (context.output) {
-          *context.output << context.result << '\n';
-        }
-        break;
-      case Status::UNKNOWN_COMMAND:
-        if (context.output) {
-          *context.output << "unknown command!\n";
-        }
-        break;
+    const auto result = processStatus(status, context);
+
+    if (context.output) {
+      *context.output << result;
     }
 
+    if (Status::LOGOUT == status) {
+      shouldProcess = false;
+    }
   }  // end command loop
+}
+
+std::string processStatus(Status status, Context& context) {
+  switch (status) {
+    case Status::OK:
+      return "ok!\n";
+      break;
+    case Status::NOT_LOGGED:
+      return "not logged!\n";
+      break;
+    case Status::UNKNOWN_USER:
+      return "unknown user!\n";
+      break;
+    case Status::EMPTY:
+      return "empty command line!\n";
+      break;
+    case Status::LOGIN:
+      return "Welcome, " + context.username + '\n';
+    case Status::LOGOUT:
+      return "logout!\n";
+      break;
+    case Status::RESULT:
+      return context.result + '\n';
+      break;
+    case Status::UNKNOWN_COMMAND:
+      return "unknown command!\n";
+      break;
+  }
+  return "";
 }

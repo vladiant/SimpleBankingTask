@@ -116,7 +116,8 @@ Status processLogin(const Arguments& arguments, Context& context) {
 
   if (context.logFile) {
     *context.logFile << context.username << " "
-                     << "login " << " " << password << '\n';
+                     << "login "
+                     << " " << password << '\n';
   }
 
   return Status::LOGIN;
