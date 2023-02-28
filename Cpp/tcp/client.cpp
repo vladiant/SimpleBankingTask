@@ -49,7 +49,6 @@ int main(int argc, char* argv[]) {
         }
 
         std::cout.write(buf.data(), len);
-        std::cout << '\n';
       }
     }
   } catch (asio::system_error& e) {
