@@ -38,7 +38,6 @@ int main(int argc, char* argv[]) {
       size_t len = socket.receive_from(asio::buffer(recv_buf), sender_endpoint);
 
       std::cout.write(recv_buf.data(), len);
-      std::cout << '\n';
     }
   } catch (asio::system_error& e) {
     std::cerr << "UDP exception: " << e.what() << std::endl;

@@ -2,12 +2,22 @@
 #include <iostream>
 #include <string>
 
+#include "controller.hpp"
+
+constexpr auto fileName = "account_history.txt";
+
 using asio::ip::udp;
 
 const unsigned short BANKING_PORT = 50013;
 
 int main() {
   try {
+    Context context;
+
+    context.output = std::make_shared<std::stringstream>();
+
+    initLoop(fileName, context);
+
     asio::io_context io_context;
 
     udp::socket socket(io_context, udp::endpoint(udp::v4(), BANKING_PORT));
@@ -17,13 +27,13 @@ int main() {
       udp::endpoint remote_endpoint;
       size_t len = socket.receive_from(asio::buffer(recv_buf), remote_endpoint);
 
-      std::cout.write(recv_buf.data(), len);
-      std::cout << '\n';
+      const std::string line(recv_buf.data(), len);
+      const auto status = processCommand(line, fileName, context);
 
-      std::string message = "Response " + std::string(recv_buf.data(), len);
+      const auto result = processStatus(status, context);
 
       asio::error_code ignored_error;
-      socket.send_to(asio::buffer(message), remote_endpoint, 0, ignored_error);
+      socket.send_to(asio::buffer(result), remote_endpoint, 0, ignored_error);
       if (ignored_error) {
         std::cout << "Sent error\n";
       }
