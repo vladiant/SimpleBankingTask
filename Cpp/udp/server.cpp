@@ -14,8 +14,6 @@ int main() {
   try {
     Context context;
 
-    context.output = std::make_shared<std::stringstream>();
-
     initLoop(fileName, context);
 
     asio::io_context io_context;
