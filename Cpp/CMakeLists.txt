@@ -235,3 +235,73 @@ target_link_libraries(
     PRIVATE
         Threads::Threads
 )
+
+# HTTP dependency
+find_package(OpenSSL REQUIRED)
+
+# HTTP client
+add_executable(
+    HttpBankingClient
+    http/client.cpp
+)
+
+set_target_properties(
+    HttpBankingClient
+    PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED YES
+        CXX_EXTENSIONS NO
+)
+
+target_compile_options(
+    HttpBankingClient
+    PRIVATE
+         $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
+         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
+)
+
+target_include_directories(
+    HttpBankingClient 
+    PUBLIC 
+      third_party/cpp-httplib
+)
+
+target_link_libraries(
+    HttpBankingClient
+    PRIVATE
+        OpenSSL::SSL
+)
+
+# HTTP server
+add_executable(
+    HttpBankingServer
+    http/server.cpp
+)
+
+set_target_properties(
+    HttpBankingServer
+    PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED YES
+        CXX_EXTENSIONS NO
+)
+
+target_compile_options(
+    HttpBankingServer
+    PRIVATE
+         $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
+         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
+)
+
+target_include_directories(
+    HttpBankingServer 
+    PUBLIC 
+      third_party/cpp-httplib
+)
+
+target_link_libraries(
+    HttpBankingServer
+    PRIVATE
+        OpenSSL::SSL
+        Threads::Threads
+)
