@@ -2,34 +2,72 @@
 
 #include <cstddef>
 #include <iostream>
+#include <list>
+
+#include "controller.hpp"
+
+constexpr auto fileName = "account_history.txt";
 
 constexpr int BANKING_PORT = 50013;
 
+class CommandProcessor {
+ public:
+  CommandProcessor(const std::string& command, Context& context)
+      : mCommand{command}, mContext{context} {}
+
+  void operator()(const httplib::Request& req, httplib::Response& res) {
+    std::string line = mCommand;
+    for (const auto& elem : req.params) {
+      line.append(" ");
+      line.append(elem.second);
+    }
+
+    const auto status = processCommand(line, fileName, mContext);
+
+    const auto result = processStatus(status, mContext);
+
+    res.set_content(result, "text/plain");
+  }
+
+ private:
+  std::string mCommand;
+  Context& mContext;
+};
+
+class CommandRegistrator {
+ public:
+  CommandRegistrator(Context& context, httplib::Server& server)
+      : mContext{context}, mServer{server} {}
+
+  void registerCommand(const std::string& command) {
+    mProcessors.emplace_back(command, mContext);
+    mServer.Post("/" + command, mProcessors.back());
+  }
+
+ private:
+  Context& mContext;
+  httplib::Server& mServer;
+  std::list<CommandProcessor> mProcessors;
+};
+
 int main() {
-  using namespace httplib;
+  Context context;
+  initLoop(fileName, context);
 
-  Server svr;
+  httplib::Server svr;
+  svr.Post("/stop",
+           [&]([[maybe_unused]] const httplib::Request& req,
+               [[maybe_unused]] httplib::Response& res) { svr.stop(); });
 
-  svr.Get("/hi", [](const Request& req, Response& res) {
-    res.set_content("Hello World!", "text/plain");
-  });
-
-  svr.Get(R"(/numbers/(\d+))", [&](const Request& req, Response& res) {
-    auto numbers = req.matches[1];
-    res.set_content(numbers, "text/plain");
-  });
-
-  svr.Get("/body-header-param", [](const Request& req, Response& res) {
-    if (req.has_header("Content-Length")) {
-      auto val = req.get_header_value("Content-Length");
-    }
-    if (req.has_param("key")) {
-      auto val = req.get_param_value("key");
-    }
-    res.set_content(req.body, "text/plain");
-  });
-
-  svr.Get("/stop", [&](const Request& req, Response& res) { svr.stop(); });
+  CommandRegistrator registrator{context, svr};
+  // TODO: Refactor using predefined commands list
+  registrator.registerCommand("login");
+  registrator.registerCommand("logout");
+  registrator.registerCommand("get");
+  registrator.registerCommand("withdraw");
+  registrator.registerCommand("deposit");
+  registrator.registerCommand("transfer");
+  registrator.registerCommand("history");
 
   svr.listen("0.0.0.0", BANKING_PORT);
 

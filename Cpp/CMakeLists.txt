@@ -270,6 +270,7 @@ target_link_libraries(
     HttpBankingClient
     PRIVATE
         OpenSSL::SSL
+        BankingLib
 )
 
 # HTTP server
@@ -304,4 +305,5 @@ target_link_libraries(
     PRIVATE
         OpenSSL::SSL
         Threads::Threads
+        BankingLib
 )
