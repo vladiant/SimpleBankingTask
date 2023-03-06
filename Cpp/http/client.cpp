@@ -6,7 +6,7 @@
 
 #include "utils.hpp"
 
-constexpr int BANKING_PORT = 50013;
+constexpr int BANKING_PORT = 50015;
 
 int main() {
   httplib::Client cli("0.0.0.0", BANKING_PORT);
