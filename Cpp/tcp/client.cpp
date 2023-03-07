@@ -5,6 +5,7 @@
 using asio::ip::tcp;
 
 const unsigned short BANKING_PORT = 50013;
+constexpr auto kEscSymbol = "\x1B";
 
 int main(int argc, char* argv[]) {
   try {
@@ -21,12 +22,16 @@ int main(int argc, char* argv[]) {
 
     std::cout << "Enter ESC to leave the command prompt\n";
 
-    for (std::string request; request != "\x1B";) {
+    for (std::string request; request != kEscSymbol;) {
       tcp::socket socket(io_context);
       asio::connect(socket, endpoints);
 
       std::cout << "$ ";
       std::getline(std::cin, request);
+
+      if (kEscSymbol == request) {
+        break;
+      }
 
       for (;;) {
         std::array<char, 128> buf;

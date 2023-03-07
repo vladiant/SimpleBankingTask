@@ -5,6 +5,7 @@
 using asio::ip::udp;
 
 const unsigned short BANKING_PORT = 50014;
+constexpr auto kEscSymbol = "\x1B";
 
 int main(int argc, char* argv[]) {
   try {
@@ -22,12 +23,16 @@ int main(int argc, char* argv[]) {
 
     std::cout << "Enter ESC to leave the command prompt\n";
 
-    for (std::string request; request != "\x1B";) {
+    for (std::string request; request != kEscSymbol;) {
       udp::socket socket(io_context);
       socket.open(udp::v4());
 
       std::cout << "$ ";
       std::getline(std::cin, request);
+
+      if (kEscSymbol == request) {
+        break;
+      }
 
       socket.send_to(asio::buffer(request), receiver_endpoint);
 

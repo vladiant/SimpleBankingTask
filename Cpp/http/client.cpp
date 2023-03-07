@@ -6,6 +6,7 @@
 
 #include "utils.hpp"
 
+constexpr auto kEscSymbol = "\x1B";
 constexpr int BANKING_PORT = 50015;
 
 int main() {
@@ -13,11 +14,15 @@ int main() {
 
   std::cout << "Enter ESC to leave the command prompt\n";
 
-  for (std::string line; line != "\x1B";) {
+  for (std::string line; line != kEscSymbol;) {
     std::cout << "$ ";
     std::getline(std::cin, line);
 
     const auto commands = extractCommands(line);
+
+    if (kEscSymbol == line) {
+      break;
+    }
 
     if (commands.empty()) {
       continue;
