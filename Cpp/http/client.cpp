@@ -9,8 +9,13 @@
 constexpr auto kEscSymbol = "\x1B";
 constexpr int BANKING_PORT = 50015;
 
-int main() {
-  httplib::Client cli("0.0.0.0", BANKING_PORT);
+int main(int argc, char* argv[]) {
+  if (argc != 2) {
+    std::cerr << "Usage: client <host>" << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  httplib::Client cli(argv[1], BANKING_PORT);
 
   std::cout << "Enter ESC to leave the command prompt\n";
 
