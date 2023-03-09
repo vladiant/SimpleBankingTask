@@ -1,5 +1,6 @@
 #include <httplib.h>
 
+#include <csignal>
 #include <cstddef>
 #include <iostream>
 #include <list>
@@ -9,6 +10,10 @@
 constexpr auto fileName = "account_history.txt";
 
 constexpr int BANKING_PORT = 50015;
+
+httplib::Server svr;
+
+void signalHandler([[maybe_unused]] int signal) { svr.stop(); }
 
 class CommandProcessor {
  public:
@@ -51,13 +56,15 @@ class CommandRegistrator {
 };
 
 int main() {
+  std::signal(SIGINT, signalHandler);
+  // K8s signals
+  std::signal(SIGTERM, signalHandler);
+  std::signal(SIGKILL, signalHandler);
+  // K8s optional signal
+  std::signal(SIGQUIT, signalHandler);
+
   Context context;
   initLoop(fileName, context);
-
-  httplib::Server svr;
-  svr.Post("/stop",
-           [&]([[maybe_unused]] const httplib::Request& req,
-               [[maybe_unused]] httplib::Response& res) { svr.stop(); });
 
   CommandRegistrator registrator{context, svr};
   // TODO: Refactor using predefined commands list
