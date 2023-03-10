@@ -1,17 +1,33 @@
 #include <asio.hpp>
+#include <csignal>
 #include <iostream>
+#include <memory>
 #include <string>
 
 #include "controller.hpp"
 
 constexpr auto fileName = "account_history.txt";
+const unsigned short BANKING_PORT = 50013;
 
 using asio::ip::tcp;
 
-const unsigned short BANKING_PORT = 50013;
+std::weak_ptr<tcp::socket> socketToCancel;
+
+void signalHandler([[maybe_unused]] int signal) {
+  if (auto handler = socketToCancel.lock()) {
+    handler->shutdown(asio::socket_base::shutdown_both);
+  }
+}
 
 int main() {
   try {
+    std::signal(SIGINT, signalHandler);
+    // K8s signals
+    std::signal(SIGTERM, signalHandler);
+    std::signal(SIGKILL, signalHandler);
+    // K8s optional signal
+    std::signal(SIGQUIT, signalHandler);
+
     Context context;
 
     initLoop(fileName, context);
@@ -22,6 +38,9 @@ int main() {
 
     for (;;) {
       tcp::socket socket(io_context);
+      std::shared_ptr<tcp::socket> socketPtr(&socket, [](void*) {});
+      socketToCancel = socketPtr;
+
       acceptor.accept(socket);
 
       std::array<char, 128> buf;
