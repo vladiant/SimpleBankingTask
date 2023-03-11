@@ -1,17 +1,33 @@
 #include <asio.hpp>
+#include <csignal>
 #include <iostream>
+#include <memory>
 #include <string>
 
 #include "controller.hpp"
 
 constexpr auto fileName = "account_history.txt";
+const unsigned short BANKING_PORT = 50014;
 
 using asio::ip::udp;
 
-const unsigned short BANKING_PORT = 50014;
+std::weak_ptr<udp::socket> socketToCancel;
+
+void signalHandler([[maybe_unused]] int signal) {
+  if (auto handler = socketToCancel.lock()) {
+    handler->shutdown(asio::socket_base::shutdown_both);
+  }
+}
 
 int main() {
   try {
+    std::signal(SIGINT, signalHandler);
+    // K8s signals
+    std::signal(SIGTERM, signalHandler);
+    std::signal(SIGKILL, signalHandler);
+    // K8s optional signal
+    std::signal(SIGQUIT, signalHandler);
+
     Context context;
 
     initLoop(fileName, context);
@@ -19,6 +35,8 @@ int main() {
     asio::io_context io_context;
 
     udp::socket socket(io_context, udp::endpoint(udp::v4(), BANKING_PORT));
+    std::shared_ptr<udp::socket> socketPtr(&socket, [](void*) {});
+    socketToCancel = socketPtr;
 
     for (;;) {
       std::array<char, 128> recv_buf;
