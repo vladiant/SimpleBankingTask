@@ -1,13 +1,29 @@
 #include <cstddef>
 #include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
 
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 #include <httplib.h>
 
-#include "utils.hpp"
-
 constexpr auto kEscSymbol = "\x1B";
 constexpr int BANKING_PORT = 50015;
+
+auto extractCommands(const std::string& line) {
+  std::istringstream inputLine{line};
+  std::vector<std::string> commands;
+
+  for (std::string command; std::getline(inputLine, command, ' ');) {
+    if (command.empty()) {
+      continue;
+    }
+
+    commands.emplace_back(std::move(command));
+  }
+
+  return commands;
+}
 
 int main(int argc, char* argv[]) {
   if (argc != 2) {
