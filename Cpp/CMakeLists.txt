@@ -306,3 +306,29 @@ target_link_libraries(
         Threads::Threads
         BankingLib
 )
+
+# Package generation
+install(
+    TARGETS
+       BankingLib
+       CliBanking
+       TestBankingLib
+       TcpBankingServer
+       TcpBankingClient
+       UdpBankingServer
+       UdpBankingClient
+       HttpBankingServer
+       HttpBankingClient
+    DESTINATION
+       simple_banking_task
+)
+
+set(CPACK_PACKAGE_VERSION_MAJOR "1")
+set(CPACK_PACKAGE_VERSION_MINOR "0")
+set(CPACK_PACKAGE_VERSION_PATCH "0")
+set(CPACK_PACKAGE_DESCRIPTION "Simple Banking C++ Task")
+set(CPACK_GENERATOR "DEB") # Debian package
+set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON) # autogenerate dependency information
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Code Author") # mandatory
+
+include(CPack)
