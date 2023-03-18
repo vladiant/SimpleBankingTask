@@ -1,8 +1,7 @@
-FROM alpine:3.12 as build
+FROM alpine:3.13 as build
 
 RUN apk update && apk add --no-cache \
     build-base cmake linux-headers openssl-dev
-
 
 COPY ./CMakeLists.txt /usr/local/src/simple_banking_task/CMakeLists.txt
 
@@ -18,7 +17,7 @@ WORKDIR /usr/local/src/simple_banking_task
 
 RUN mkdir build \
     && cd build \
-    && cmake .. \
+    && cmake .. -DCMAKE_C_COMPILER_WORKS=1 -DCMAKE_CXX_COMPILER_WORKS=1 \
     && make \
     && make test \
     && make install
