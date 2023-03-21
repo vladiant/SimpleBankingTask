@@ -320,7 +320,7 @@ install(
        HttpBankingServer
        HttpBankingClient
     DESTINATION
-       simple_banking_task
+       /simple_banking_task
 )
 
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
