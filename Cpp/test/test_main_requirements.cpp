@@ -27,6 +27,12 @@ using Test::Responses::kLoginResponseStart;
 using Test::Responses::kLogoutResponse;
 using Test::Responses::kOkResponse;
 
+auto getPath() {
+  auto tempPath = std::filesystem::temp_directory_path();
+  tempPath /= kFileName;
+  return tempPath;
+}
+
 struct MainRequirementsTest {
   std::unique_ptr<Context> context_;
   std::shared_ptr<std::stringstream> output_;
@@ -36,14 +42,14 @@ UTEST_F_SETUP(MainRequirementsTest) {
   static_cast<void>(utest_result);
   utest_fixture->context_ = std::make_unique<Context>();
   utest_fixture->output_ = std::make_shared<std::stringstream>();
-  EXPECT_FALSE(std::filesystem::exists(kFileName));
+  EXPECT_FALSE(std::filesystem::exists(getPath()));
 }
 
 UTEST_F_TEARDOWN(MainRequirementsTest) {
   static_cast<void>(utest_result);
   static_cast<void>(utest_fixture->context_);
-  EXPECT_TRUE(std::filesystem::exists(kFileName));
-  EXPECT_TRUE(std::filesystem::remove(kFileName));
+  EXPECT_TRUE(std::filesystem::exists(getPath()));
+  EXPECT_TRUE(std::filesystem::remove(getPath()));
 }
 
 UTEST_F(MainRequirementsTest, MainRequirements_LoginLogout_Messages) {
@@ -57,10 +63,10 @@ UTEST_F(MainRequirementsTest, MainRequirements_LoginLogout_Messages) {
   context.input = command_buffer;
   context.output = utest_fixture->output_;
 
-  initLoop(kFileName, context);
+  initLoop(getPath(), context);
 
   // Act
-  processLoop(kFileName, context);
+  processLoop(getPath(), context);
 
   // Assert
   std::stringstream expectedResponse;
@@ -82,10 +88,10 @@ UTEST_F(MainRequirementsTest,
   context.input = command_buffer;
   context.output = utest_fixture->output_;
 
-  initLoop(kFileName, context);
+  initLoop(getPath(), context);
 
   // Act
-  processLoop(kFileName, context);
+  processLoop(getPath(), context);
 
   // Assert
   std::stringstream expectedResponse;
@@ -110,10 +116,10 @@ UTEST_F(MainRequirementsTest,
   context.input = command_buffer;
   context.output = utest_fixture->output_;
 
-  initLoop(kFileName, context);
+  initLoop(getPath(), context);
 
   // Act
-  processLoop(kFileName, context);
+  processLoop(getPath(), context);
 
   // Assert
   std::stringstream expectedResponse;
@@ -142,10 +148,10 @@ UTEST_F(MainRequirementsTest,
   context.input = command_buffer;
   context.output = utest_fixture->output_;
 
-  initLoop(kFileName, context);
+  initLoop(getPath(), context);
 
   // Act
-  processLoop(kFileName, context);
+  processLoop(getPath(), context);
 
   // Assert
   std::stringstream expectedResponse;
