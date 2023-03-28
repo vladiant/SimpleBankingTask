@@ -1,17 +1,25 @@
 #include <asio.hpp>
 #include <csignal>
+#include <filesystem>
 #include <iostream>
 #include <memory>
 #include <string>
 
 #include "controller.hpp"
 
-constexpr auto fileName = "account_history.txt";
+constexpr auto kLogFolder = "log";
+constexpr auto kFileName = "account_history.txt";
 const unsigned short BANKING_PORT = 50014;
 
 using asio::ip::udp;
 
 std::weak_ptr<udp::socket> socketToCancel;
+
+auto getPath() {
+  std::filesystem::path tempPath{kLogFolder};
+  tempPath /= kFileName;
+  return tempPath;
+}
 
 void signalHandler([[maybe_unused]] int signal) {
   if (auto handler = socketToCancel.lock()) {
@@ -20,6 +28,10 @@ void signalHandler([[maybe_unused]] int signal) {
 }
 
 int main() {
+  if (!std::filesystem::exists(kLogFolder)) {
+    std::filesystem::create_directory(kLogFolder);
+  }
+
   try {
     std::signal(SIGINT, signalHandler);
     // K8s signals
@@ -30,7 +42,7 @@ int main() {
 
     Context context;
 
-    initLoop(fileName, context);
+    initLoop(getPath().string(), context);
 
     asio::io_context io_context;
 
@@ -44,7 +56,7 @@ int main() {
       size_t len = socket.receive_from(asio::buffer(recv_buf), remote_endpoint);
 
       const std::string line(recv_buf.data(), len);
-      const auto status = processCommand(line, fileName, context);
+      const auto status = processCommand(line, getPath().string(), context);
 
       const auto result = processStatus(status, context);
 
