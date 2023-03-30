@@ -2,16 +2,24 @@
 
 #include <csignal>
 #include <cstddef>
+#include <filesystem>
 #include <iostream>
 #include <list>
 
 #include "controller.hpp"
 
-constexpr auto fileName = "account_history.txt";
+constexpr auto kLogFolder = "log";
+constexpr auto kFileName = "account_history.txt";
 
 constexpr int BANKING_PORT = 50015;
 
 httplib::Server svr;
+
+auto getPath() {
+  std::filesystem::path tempPath{kLogFolder};
+  tempPath /= kFileName;
+  return tempPath;
+}
 
 void signalHandler([[maybe_unused]] int signal) { svr.stop(); }
 
@@ -27,7 +35,7 @@ class CommandProcessor {
       line.append(elem.second);
     }
 
-    const auto status = processCommand(line, fileName, mContext);
+    const auto status = processCommand(line, getPath().string(), mContext);
 
     const auto result = processStatus(status, mContext);
 
@@ -56,6 +64,10 @@ class CommandRegistrator {
 };
 
 int main() {
+  if (!std::filesystem::exists(kLogFolder)) {
+    std::filesystem::create_directory(kLogFolder);
+  }
+
   std::signal(SIGINT, signalHandler);
   // K8s signals
   std::signal(SIGTERM, signalHandler);
@@ -64,7 +76,7 @@ int main() {
   std::signal(SIGQUIT, signalHandler);
 
   Context context;
-  initLoop(fileName, context);
+  initLoop(getPath().string(), context);
 
   CommandRegistrator registrator{context, svr};
   // TODO: Refactor using predefined commands list
