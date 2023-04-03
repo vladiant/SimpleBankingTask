@@ -24,4 +24,6 @@ RUN mkdir build \
 
 RUN rm -rf /tmp/src
 
+WORKDIR /simple_banking_task
+
 EXPOSE 50013 50014 50015
