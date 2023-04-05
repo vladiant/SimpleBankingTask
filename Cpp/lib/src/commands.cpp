@@ -103,6 +103,11 @@ Status processLogout(const Arguments&, Context& context) {
   }
   context.username.clear();
 
+  // Flush existing data
+  if (context.logFile) {
+    context.logFile->flush();
+  }
+
   return Status::LOGOUT;
 }
 
