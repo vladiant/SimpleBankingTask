@@ -30,3 +30,9 @@ docker run --rm --network=host --entrypoint /simple_banking_task/UdpBankingServe
 ```sh
 docker run --rm --network=host --entrypoint /simple_banking_task/HttpBankingServer --mount src="$(pwd)"/task_log,target=/simple_banking_task/log,type=bind simple_banking_task
 ```
+
+## Debug
+
+```sh
+docker run --rm -it --network=host --entrypoint /bin/sh simple_banking_task
+```
