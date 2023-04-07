@@ -26,4 +26,12 @@ RUN rm -rf /tmp/src
 
 WORKDIR /simple_banking_task
 
+COPY ./entrypoint.sh /simple_banking_task/entrypoint.sh
+
+RUN chmod +x /simple_banking_task/entrypoint.sh
+
 EXPOSE 50013 50014 50015
+
+ENTRYPOINT [ "/simple_banking_task/entrypoint.sh" ]
+
+CMD [ "echo", "Default argument" ]
