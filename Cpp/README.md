@@ -13,22 +13,42 @@ docker build -t simple_banking_task .
 
 The folder `./task_log` is used to store the account activity file. 
 
-### Run TCP Server
+### TCP Server
 
 ```sh
-docker run --rm --network=host --entrypoint /simple_banking_task/TcpBankingServer --mount src="$(pwd)"/task_log,target=/simple_banking_task/log,type=bind simple_banking_task
+docker run --rm -it --network=host  --mount src="$(pwd)"/task_log,target=/simple_banking_task/log,type=bind simple_banking_task TcpBankingServer
 ```
 
-### Run UDP Server
+### UDP Server
 
 ```sh
-docker run --rm --network=host --entrypoint /simple_banking_task/UdpBankingServer --mount src="$(pwd)"/task_log,target=/simple_banking_task/log,type=bind simple_banking_task
+docker run --rm -it --network=host  --mount src="$(pwd)"/task_log,target=/simple_banking_task/log,type=bind simple_banking_task UdpBankingServer
 ```
 
-### Run HTTP Server
+### HTTP Server
 
 ```sh
-docker run --rm --network=host --entrypoint /simple_banking_task/HttpBankingServer --mount src="$(pwd)"/task_log,target=/simple_banking_task/log,type=bind simple_banking_task
+docker run --rm -it --network=host  --mount src="$(pwd)"/task_log,target=/simple_banking_task/log,type=bind simple_banking_task HttpBankingServer
+```
+
+## Clients
+
+### TCP Client
+
+```sh
+docker run --rm -it --network=host -it simple_banking_task TcpBankingClient 0.0.0.0
+```
+
+### UDP Client
+
+```sh
+docker run --rm -it --network=host -it simple_banking_task UdpBankingClient 0.0.0.0
+```
+
+### HTTP Client
+
+```sh
+docker run --rm -it --network=host -it simple_banking_task HttpBankingClient 0.0.0.0
 ```
 
 ## Debug
