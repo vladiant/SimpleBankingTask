@@ -11,16 +11,19 @@ using BalanceType = float;
 using Balances = std::map<std::string, BalanceType>;
 using Arguments = std::vector<std::string>;
 using Result = std::string;
+using Storage = std::shared_ptr<std::iostream>;
+using Input = std::shared_ptr<std::istream>;
+using Output = std::shared_ptr<std::ostream>;
 
 struct Context {
   // Consider empty name as no logged user
   std::string username;
   Balances balances;
-  std::shared_ptr<std::iostream> logFile;
+  Storage logFile;
   // TODO: Consider using null object
-  std::shared_ptr<std::ostream> output;
+  Output output;
   // TODO: Consider using null object
-  std::shared_ptr<std::istream> input;
+  Input input;
   Result result;
 };
 
