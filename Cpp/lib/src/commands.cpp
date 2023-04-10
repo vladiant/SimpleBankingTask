@@ -6,6 +6,8 @@
 
 #include "utils.hpp"
 
+namespace sbt {
+
 Status processHistory(const Arguments& arguments, Context& context) {
   // TODO: Handle improper arguments size
   const auto fileName = arguments.at(0);
@@ -127,3 +129,5 @@ Status processLogin(const Arguments& arguments, Context& context) {
 
   return Status::LOGIN;
 }
+
+}  // namespace sbt

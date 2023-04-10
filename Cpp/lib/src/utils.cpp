@@ -3,6 +3,8 @@
 #include <iostream>
 #include <sstream>
 
+namespace sbt {
+
 void printCommand(const Arguments& arguments) {
   for (const auto& argument : arguments) {
     std::cout << argument << " ";
@@ -36,3 +38,5 @@ Arguments extractCommands(const std::string& line) {
 
   return commands;
 }
+
+}  // namespace sbt

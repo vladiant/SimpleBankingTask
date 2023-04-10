@@ -8,6 +8,8 @@
 #include "controller.hpp"
 #include "testing_utils.hpp"
 
+namespace sbt {
+
 using Test::Data::kFileName;
 using Test::Data::kTestDeposit;
 using Test::Data::kTestPassword;
@@ -34,13 +36,13 @@ auto getPath() {
 }
 
 struct MainRequirementsTest {
-  std::unique_ptr<Context> context_;
+  std::unique_ptr<sbt::Context> context_;
   std::shared_ptr<std::stringstream> output_;
 };
 
 UTEST_F_SETUP(MainRequirementsTest) {
   static_cast<void>(utest_result);
-  utest_fixture->context_ = std::make_unique<Context>();
+  utest_fixture->context_ = std::make_unique<sbt::Context>();
   utest_fixture->output_ = std::make_shared<std::stringstream>();
   EXPECT_FALSE(std::filesystem::exists(getPath()));
 }
@@ -164,3 +166,5 @@ UTEST_F(MainRequirementsTest,
   expectedResponse << kLogoutResponse << kEOR;
   EXPECT_EQ(utest_fixture->output_->str(), expectedResponse.str());
 }
+
+}  // namespace sbt

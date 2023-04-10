@@ -2,6 +2,8 @@
 
 #include <string>
 
+namespace sbt {
+
 void utest_type_printer(const std::string& val);
 
 namespace Test {
@@ -41,3 +43,5 @@ static constexpr auto kEOR{"\n"};
 }  // namespace Responses
 
 }  // namespace Test
+
+}  // namespace sbt

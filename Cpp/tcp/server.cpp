@@ -40,9 +40,9 @@ int main() {
     // K8s optional signal
     std::signal(SIGQUIT, signalHandler);
 
-    Context context;
+    sbt::Context context;
 
-    initLoop(getPath().string(), context);
+    sbt::initLoop(getPath().string(), context);
 
     asio::io_context io_context;
 
@@ -65,9 +65,10 @@ int main() {
       }
 
       const std::string line(buf.data(), len);
-      const auto status = processCommand(line, getPath().string(), context);
+      const auto status =
+          sbt::processCommand(line, getPath().string(), context);
 
-      const auto result = processStatus(status, context);
+      const auto result = sbt::processStatus(status, context);
 
       asio::error_code ignored_error;
       asio::write(socket, asio::buffer(result), ignored_error);

@@ -4,6 +4,8 @@
 
 #include "utils.hpp"
 
+namespace sbt {
+
 Status processGet(const Arguments& arguments, Context& context) {
   context.result.clear();
   // TODO: Handle improper arguments size
@@ -18,3 +20,5 @@ Status processGet(const Arguments& arguments, Context& context) {
   }
   return Status::RESULT;
 }
+
+}  // namespace sbt

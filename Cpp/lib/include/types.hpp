@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+namespace sbt {
+
 using BalanceType = float;
 using Balances = std::map<std::string, BalanceType>;
 using Arguments = std::vector<std::string>;
@@ -37,3 +39,5 @@ enum class Status {
   RESULT,
   OK
 };
+
+}  // namespace sbt

@@ -25,7 +25,7 @@ void signalHandler([[maybe_unused]] int signal) { svr.stop(); }
 
 class CommandProcessor {
  public:
-  CommandProcessor(const std::string& command, Context& context)
+  CommandProcessor(const std::string& command, sbt::Context& context)
       : mCommand{command}, mContext{context} {}
 
   void operator()(const httplib::Request& req, httplib::Response& res) {
@@ -35,21 +35,21 @@ class CommandProcessor {
       line.append(elem.second);
     }
 
-    const auto status = processCommand(line, getPath().string(), mContext);
+    const auto status = sbt::processCommand(line, getPath().string(), mContext);
 
-    const auto result = processStatus(status, mContext);
+    const auto result = sbt::processStatus(status, mContext);
 
     res.set_content(result, "text/plain");
   }
 
  private:
   std::string mCommand;
-  Context& mContext;
+  sbt::Context& mContext;
 };
 
 class CommandRegistrator {
  public:
-  CommandRegistrator(Context& context, httplib::Server& server)
+  CommandRegistrator(sbt::Context& context, httplib::Server& server)
       : mContext{context}, mServer{server} {}
 
   void registerCommand(const std::string& command) {
@@ -58,7 +58,7 @@ class CommandRegistrator {
   }
 
  private:
-  Context& mContext;
+  sbt::Context& mContext;
   httplib::Server& mServer;
   std::list<CommandProcessor> mProcessors;
 };
@@ -75,8 +75,8 @@ int main() {
   // K8s optional signal
   std::signal(SIGQUIT, signalHandler);
 
-  Context context;
-  initLoop(getPath().string(), context);
+  sbt::Context context;
+  sbt::initLoop(getPath().string(), context);
 
   CommandRegistrator registrator{context, svr};
   // TODO: Refactor using predefined commands list

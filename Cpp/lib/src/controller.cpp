@@ -7,6 +7,8 @@
 #include "queries.hpp"
 #include "utils.hpp"
 
+namespace sbt {
+
 // TODO: Fix usage of filename - in context
 Status processCommand(const std::string& line, const std::string& fileName,
                       Context& context) {
@@ -233,3 +235,5 @@ std::string processStatus(Status status, Context& context) {
   }
   return "";
 }
+
+}  // namespace sbt
