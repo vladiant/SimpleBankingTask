@@ -39,7 +39,7 @@ Arguments extractCommands(const std::string& line) {
   return commands;
 }
 
-std::string readFromStorage(Storage& storage) {
+std::string readFromStorage(Storage storage) {
   std::string str;
 
   if (!storage) {

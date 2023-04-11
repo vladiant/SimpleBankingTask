@@ -11,7 +11,7 @@ int main(int, char**) {
   context.input = std::shared_ptr<std::istream>(&std::cin, [](void*) {});
 
   sbt::initLoop(fileName, context);
-  sbt::processLoop(fileName, context);
+  sbt::processLoop(context);
 
   return EXIT_SUCCESS;
 }

@@ -65,8 +65,7 @@ int main() {
       }
 
       const std::string line(buf.data(), len);
-      const auto status =
-          sbt::processCommand(line, getPath().string(), context);
+      const auto status = sbt::processCommand(line, context);
 
       const auto result = sbt::processStatus(status, context);
 

@@ -9,9 +9,7 @@
 
 namespace sbt {
 
-// TODO: Fix usage of filename - in context
-Status processCommand(const std::string& line, const std::string& fileName,
-                      Context& context) {
+Status processCommand(const std::string& line, Context& context) {
   const auto commands = extractCommands(line);
 
   // Skip empty command line
@@ -27,7 +25,7 @@ Status processCommand(const std::string& line, const std::string& fileName,
       if (command == "logout") {
         return processLogout({}, context);
       } else if (command == "history") {
-        return processHistory({fileName}, context);
+        return processHistory({}, context);
       } else {
         printNotSupportedCommand(commands);
         return Status::UNKNOWN_COMMAND;
@@ -182,8 +180,7 @@ void initLoop(const std::string& fileName, Context& context) {
   context.balances = readBallances(fileName);
 }
 
-// TODO: Fix usage of filename - in context
-void processLoop(const std::string& fileName, Context& context) {
+void processLoop(Context& context) {
   bool shouldProcess = true;
   while (shouldProcess) {
     std::string line;
@@ -193,7 +190,7 @@ void processLoop(const std::string& fileName, Context& context) {
     std::getline(*context.input, line);
 
     // TODO: Refactor balance reading
-    const auto status = processCommand(line, fileName, context);
+    const auto status = processCommand(line, context);
 
     const auto result = processStatus(status, context);
 

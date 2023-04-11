@@ -35,7 +35,7 @@ class CommandProcessor {
       line.append(elem.second);
     }
 
-    const auto status = sbt::processCommand(line, getPath().string(), mContext);
+    const auto status = sbt::processCommand(line, mContext);
 
     const auto result = sbt::processStatus(status, mContext);
 

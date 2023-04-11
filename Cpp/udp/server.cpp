@@ -56,8 +56,7 @@ int main() {
       size_t len = socket.receive_from(asio::buffer(recv_buf), remote_endpoint);
 
       const std::string line(recv_buf.data(), len);
-      const auto status =
-          sbt::processCommand(line, getPath().string(), context);
+      const auto status = sbt::processCommand(line, context);
 
       const auto result = sbt::processStatus(status, context);
 

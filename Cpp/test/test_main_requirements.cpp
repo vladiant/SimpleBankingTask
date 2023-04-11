@@ -68,7 +68,7 @@ UTEST_F(MainRequirementsTest, MainRequirements_LoginLogout_Messages) {
   initLoop(getPath(), context);
 
   // Act
-  processLoop(getPath(), context);
+  processLoop(context);
 
   // Assert
   std::stringstream expectedResponse;
@@ -93,7 +93,7 @@ UTEST_F(MainRequirementsTest,
   initLoop(getPath(), context);
 
   // Act
-  processLoop(getPath(), context);
+  processLoop(context);
 
   // Assert
   std::stringstream expectedResponse;
@@ -121,7 +121,7 @@ UTEST_F(MainRequirementsTest,
   initLoop(getPath(), context);
 
   // Act
-  processLoop(getPath(), context);
+  processLoop(context);
 
   // Assert
   std::stringstream expectedResponse;
@@ -153,7 +153,7 @@ UTEST_F(MainRequirementsTest,
   initLoop(getPath(), context);
 
   // Act
-  processLoop(getPath(), context);
+  processLoop(context);
 
   // Assert
   std::stringstream expectedResponse;

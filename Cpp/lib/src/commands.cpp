@@ -8,26 +8,18 @@
 
 namespace sbt {
 
-Status processHistory(const Arguments& arguments, Context& context) {
-  // TODO: Handle improper arguments size
-  const auto fileName = arguments.at(0);
-
+Status processHistory([[maybe_unused]] const Arguments& arguments,
+                      Context& context) {
   // Flush existing data
   if (context.logFile) {
     context.logFile->flush();
   }
 
-  std::fstream historyFile(fileName, std::ios_base::in);
-  while (historyFile) {
-    std::string log;
-    std::getline(historyFile, log);
-    if (log.empty()) {
-      break;
-    }
-    if (context.output) {
-      *context.output << log << '\n';
-    }
+  auto data = readFromStorage(context.logFile);
+  if (context.output) {
+    *context.output << data << '\n';
   }
+
   return Status::OK;
 }
 
