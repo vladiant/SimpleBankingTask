@@ -39,4 +39,24 @@ Arguments extractCommands(const std::string& line) {
   return commands;
 }
 
+std::string readFromStorage(Storage& storage) {
+  std::string str;
+
+  if (!storage) {
+    return str;
+  }
+
+  // Get stored data size
+  storage->seekg(0, std::ios::end);
+  str.reserve(storage->tellg());
+  storage->seekg(0, std::ios::beg);
+
+  str.assign((std::istreambuf_iterator<char>(*storage)),
+             std::istreambuf_iterator<char>());
+
+  // Assume new lines will be stored at the end
+  storage->seekg(0, std::ios::end);
+  return str;
+}
+
 }  // namespace sbt

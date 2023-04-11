@@ -12,4 +12,6 @@ void initializeUserBalance(const std::string& user, Balances& balances);
 
 Arguments extractCommands(const std::string& line);
 
+std::string readFromStorage(Storage t);
+
 }  // namespace sbt
