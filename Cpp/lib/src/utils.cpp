@@ -1,5 +1,6 @@
 #include "utils.hpp"
 
+#include <fstream>
 #include <iostream>
 #include <sstream>
 
@@ -57,6 +58,11 @@ std::string readFromStorage(Storage storage) {
   // Assume new lines will be stored at the end
   storage->seekg(0, std::ios::end);
   return str;
+}
+
+Storage createFileStorage(const std::string& fileName) {
+  return std::make_shared<std::fstream>(
+      fileName, std::ios_base::app | std::ios_base::in | std::ios_base::out);
 }
 
 }  // namespace sbt

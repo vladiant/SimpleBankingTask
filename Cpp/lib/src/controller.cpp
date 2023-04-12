@@ -1,6 +1,5 @@
 #include "controller.hpp"
 
-#include <fstream>
 #include <iostream>
 
 #include "commands.hpp"
@@ -103,20 +102,18 @@ Status processCommand(const std::string& line, Context& context) {
   return Status::OK;
 }
 
-Balances readBallances(const std::string& fileName) {
+Balances readBallances(Storage storage) {
   Context context;
 
-  // TODO: Process it properly under context
-  std::fstream logFile(fileName, std::ios_base::in);
-
-  if (!logFile.is_open()) {
-    std::cout << "Error opening " << fileName << '\n';
+  if (!storage) {
+    std::cout << "Empty storage" << '\n';
+    return {};
   }
 
   // Commands loop
-  while (logFile.good()) {
+  while (storage->good()) {
     std::string line;
-    std::getline(logFile, line);
+    std::getline(*storage, line);
     if (line.empty()) {
       break;
     }
@@ -171,13 +168,12 @@ Balances readBallances(const std::string& fileName) {
 // TODO: Haindle initialization failure
 void initLoop(const std::string& fileName, Context& context) {
   // TODO: Handle processing of file
-  context.logFile = std::make_shared<std::fstream>(
-      fileName, std::ios_base::app | std::ios_base::in | std::ios_base::out);
+  context.logFile = createFileStorage(fileName);
   if (!context.logFile->good()) {
-    std::cout << "Error opening " << fileName << '\n';
+    std::cout << "Error opening storage" << '\n';
   }
 
-  context.balances = readBallances(fileName);
+  context.balances = readBallances(context.logFile);
 }
 
 void processLoop(Context& context) {

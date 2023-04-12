@@ -14,4 +14,6 @@ Arguments extractCommands(const std::string& line);
 
 std::string readFromStorage(Storage t);
 
+Storage createFileStorage(const std::string& fileName);
+
 }  // namespace sbt

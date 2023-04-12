@@ -8,7 +8,7 @@ namespace sbt {
 
 Status processCommand(const std::string& line, Context& context);
 
-Balances readBallances(const std::string& fileName);
+Balances readBallances(Storage fileName);
 
 void initLoop(const std::string& fileName, Context& context);
 
