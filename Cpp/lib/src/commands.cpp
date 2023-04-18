@@ -11,11 +11,11 @@ namespace sbt {
 Status processHistory([[maybe_unused]] const Arguments& arguments,
                       Context& context) {
   // Flush existing data
-  if (context.logFile) {
-    context.logFile->flush();
+  if (context.log) {
+    context.log->flush();
   }
 
-  auto data = readFromStorage(context.logFile);
+  auto data = readFromStorage(context.log);
   if (context.output) {
     *context.output << data << '\n';
   }
@@ -29,11 +29,11 @@ Status processWithdraw(const Arguments& arguments, Context& context) {
   BalanceType amount;
   ss >> amount;
   context.balances[context.username] -= amount;
-  if (!context.logFile) {
+  if (!context.log) {
     return Status::OK;
   }
-  *context.logFile << context.username << " "
-                   << "withdraw " << amount << '\n';
+  *context.log << context.username << " "
+               << "withdraw " << amount << '\n';
   return Status::OK;
 }
 
@@ -43,11 +43,11 @@ Status processDeposit(const Arguments& arguments, Context& context) {
   BalanceType amount;
   ss >> amount;
   context.balances[context.username] += amount;
-  if (!context.logFile) {
+  if (!context.log) {
     return Status::OK;
   }
-  *context.logFile << context.username << " "
-                   << "deposit " << amount << '\n';
+  *context.log << context.username << " "
+               << "deposit " << amount << '\n';
   return Status::OK;
 }
 
@@ -75,9 +75,9 @@ Status processTransfer(const Arguments& arguments, Context& context) {
   context.balances[context.username] -= amount;
   context.balances[user] += amount;
 
-  if (context.logFile) {
-    *context.logFile << context.username << " "
-                     << "transfer " << amount << " to " << user << '\n';
+  if (context.log) {
+    *context.log << context.username << " "
+                 << "transfer " << amount << " to " << user << '\n';
   }
 
   // TODO: Fix duplication
@@ -91,15 +91,15 @@ Status processTransfer(const Arguments& arguments, Context& context) {
 
 Status processLogout(const Arguments&, Context& context) {
   // TODO: Handle improper arguments size
-  if (context.logFile) {
-    *context.logFile << context.username << " "
-                     << "logout" << '\n';
+  if (context.log) {
+    *context.log << context.username << " "
+                 << "logout" << '\n';
   }
   context.username.clear();
 
   // Flush existing data
-  if (context.logFile) {
-    context.logFile->flush();
+  if (context.log) {
+    context.log->flush();
   }
 
   return Status::LOGOUT;
@@ -113,10 +113,10 @@ Status processLogin(const Arguments& arguments, Context& context) {
   context.username = arguments.at(0);
   initializeUserBalance(context.username, context.balances);
 
-  if (context.logFile) {
-    *context.logFile << context.username << " "
-                     << "login "
-                     << " " << password << '\n';
+  if (context.log) {
+    *context.log << context.username << " "
+                 << "login "
+                 << " " << password << '\n';
   }
 
   return Status::LOGIN;

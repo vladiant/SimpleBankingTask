@@ -21,7 +21,7 @@ struct Context {
   // Consider empty name as no logged user
   std::string username;
   Balances balances;
-  Storage logFile;
+  Storage log;
   // TODO: Consider using null object
   Output output;
   // TODO: Consider using null object

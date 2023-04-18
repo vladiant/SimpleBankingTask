@@ -168,12 +168,12 @@ Balances readBallances(Storage storage) {
 // TODO: Haindle initialization failure
 void initLoop(const std::string& fileName, Context& context) {
   // TODO: Handle processing of file
-  context.logFile = createFileStorage(fileName);
-  if (!context.logFile->good()) {
+  context.log = createFileStorage(fileName);
+  if (!context.log->good()) {
     std::cout << "Error opening storage" << '\n';
   }
 
-  context.balances = readBallances(context.logFile);
+  context.balances = readBallances(context.log);
 }
 
 void processLoop(Context& context) {
