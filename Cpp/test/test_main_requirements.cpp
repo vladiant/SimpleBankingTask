@@ -7,6 +7,7 @@
 
 #include "controller.hpp"
 #include "testing_utils.hpp"
+#include "utils.hpp"
 
 namespace sbt {
 
@@ -64,8 +65,9 @@ UTEST_F(MainRequirementsTest, MainRequirements_LoginLogout_Messages) {
   auto& context = *utest_fixture->context_;
   context.input = command_buffer;
   context.output = utest_fixture->output_;
+  context.log = sbt::createFileStorage(getPath());
 
-  initLoop(getPath(), context);
+  initLoop(context);
 
   // Act
   processLoop(context);
@@ -89,8 +91,9 @@ UTEST_F(MainRequirementsTest,
   auto& context = *utest_fixture->context_;
   context.input = command_buffer;
   context.output = utest_fixture->output_;
+  context.log = sbt::createFileStorage(getPath());
 
-  initLoop(getPath(), context);
+  initLoop(context);
 
   // Act
   processLoop(context);
@@ -117,8 +120,9 @@ UTEST_F(MainRequirementsTest,
   auto& context = *utest_fixture->context_;
   context.input = command_buffer;
   context.output = utest_fixture->output_;
+  context.log = sbt::createFileStorage(getPath());
 
-  initLoop(getPath(), context);
+  initLoop(context);
 
   // Act
   processLoop(context);
@@ -149,8 +153,9 @@ UTEST_F(MainRequirementsTest,
   auto& context = *utest_fixture->context_;
   context.input = command_buffer;
   context.output = utest_fixture->output_;
+  context.log = sbt::createFileStorage(getPath());
 
-  initLoop(getPath(), context);
+  initLoop(context);
 
   // Act
   processLoop(context);

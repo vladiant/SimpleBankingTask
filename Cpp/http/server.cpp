@@ -7,6 +7,7 @@
 #include <list>
 
 #include "controller.hpp"
+#include "utils.hpp"
 
 constexpr auto kLogFolder = "log";
 constexpr auto kFileName = "account_history.txt";
@@ -76,7 +77,8 @@ int main() {
   std::signal(SIGQUIT, signalHandler);
 
   sbt::Context context;
-  sbt::initLoop(getPath().string(), context);
+  context.log = sbt::createFileStorage(getPath().string());
+  sbt::initLoop(context);
 
   CommandRegistrator registrator{context, svr};
   // TODO: Refactor using predefined commands list

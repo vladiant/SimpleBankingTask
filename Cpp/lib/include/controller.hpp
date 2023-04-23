@@ -10,7 +10,7 @@ Status processCommand(const std::string& line, Context& context);
 
 Balances readBallances(Storage storage);
 
-void initLoop(const std::string& fileName, Context& context);
+void initLoop(Context& context);
 
 void processLoop(Context& context);
 

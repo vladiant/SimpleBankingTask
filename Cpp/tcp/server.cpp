@@ -6,6 +6,7 @@
 #include <string>
 
 #include "controller.hpp"
+#include "utils.hpp"
 
 constexpr auto kLogFolder = "log";
 constexpr auto kFileName = "account_history.txt";
@@ -41,8 +42,9 @@ int main() {
     std::signal(SIGQUIT, signalHandler);
 
     sbt::Context context;
+    context.log = sbt::createFileStorage(getPath().string());
 
-    sbt::initLoop(getPath().string(), context);
+    sbt::initLoop(context);
 
     asio::io_context io_context;
 
