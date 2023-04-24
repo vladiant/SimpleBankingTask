@@ -41,8 +41,8 @@ int main() {
     // K8s optional signal
     std::signal(SIGQUIT, signalHandler);
 
-    sbt::Context context;
-    context.log = sbt::createFileStorage(getPath().string());
+    auto storage = sbt::createFileStorage(getPath().string());
+    sbt::Context context{storage};
 
     sbt::initLoop(context);
 

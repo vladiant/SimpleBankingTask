@@ -13,15 +13,17 @@ using BalanceType = float;
 using Balances = std::map<std::string, BalanceType>;
 using Arguments = std::vector<std::string>;
 using Result = std::string;
-using Storage = std::shared_ptr<std::iostream>;
+using Storage = std::iostream;
 using Input = std::shared_ptr<std::istream>;
 using Output = std::shared_ptr<std::ostream>;
 
 struct Context {
+  Context(Storage& aLog) : log{aLog} {}
+
   // Consider empty name as no logged user
   std::string username;
   Balances balances;
-  Storage log;
+  Storage& log;
   // TODO: Consider using null object
   Output output;
   // TODO: Consider using null object

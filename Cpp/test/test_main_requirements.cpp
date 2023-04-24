@@ -37,15 +37,17 @@ auto getPath() {
 }
 
 struct MainRequirementsTest {
+  std::unique_ptr<sbt::Storage> storage_;
   std::unique_ptr<sbt::Context> context_;
   std::shared_ptr<std::stringstream> output_;
 };
 
 UTEST_F_SETUP(MainRequirementsTest) {
   static_cast<void>(utest_result);
-  utest_fixture->context_ = std::make_unique<sbt::Context>();
-  utest_fixture->output_ = std::make_shared<std::stringstream>();
   EXPECT_FALSE(std::filesystem::exists(getPath()));
+  utest_fixture->storage_ = std::make_unique<std::fstream>(sbt::createFileStorage(getPath()));
+  utest_fixture->context_ = std::make_unique<sbt::Context>(*utest_fixture->storage_);
+  utest_fixture->output_ = std::make_shared<std::stringstream>();
 }
 
 UTEST_F_TEARDOWN(MainRequirementsTest) {
@@ -65,7 +67,6 @@ UTEST_F(MainRequirementsTest, MainRequirements_LoginLogout_Messages) {
   auto& context = *utest_fixture->context_;
   context.input = command_buffer;
   context.output = utest_fixture->output_;
-  context.log = sbt::createFileStorage(getPath());
 
   initLoop(context);
 
@@ -91,7 +92,6 @@ UTEST_F(MainRequirementsTest,
   auto& context = *utest_fixture->context_;
   context.input = command_buffer;
   context.output = utest_fixture->output_;
-  context.log = sbt::createFileStorage(getPath());
 
   initLoop(context);
 
@@ -120,7 +120,6 @@ UTEST_F(MainRequirementsTest,
   auto& context = *utest_fixture->context_;
   context.input = command_buffer;
   context.output = utest_fixture->output_;
-  context.log = sbt::createFileStorage(getPath());
 
   initLoop(context);
 
@@ -153,7 +152,6 @@ UTEST_F(MainRequirementsTest,
   auto& context = *utest_fixture->context_;
   context.input = command_buffer;
   context.output = utest_fixture->output_;
-  context.log = sbt::createFileStorage(getPath());
 
   initLoop(context);
 

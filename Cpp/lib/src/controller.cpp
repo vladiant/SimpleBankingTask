@@ -102,8 +102,8 @@ Status processCommand(const std::string& line, Context& context) {
   return Status::OK;
 }
 
-Balances readBallances(Storage storage) {
-  Context context;
+Balances readBallances(Storage& storage) {
+  Context context{storage};
 
   if (!storage) {
     std::cout << "Empty storage" << '\n';
@@ -111,9 +111,9 @@ Balances readBallances(Storage storage) {
   }
 
   // Commands loop
-  while (storage->good()) {
+  while (storage.good()) {
     std::string line;
-    std::getline(*storage, line);
+    std::getline(storage, line);
     if (line.empty()) {
       break;
     }
@@ -168,7 +168,7 @@ Balances readBallances(Storage storage) {
 // TODO: Haindle initialization failure
 void initLoop(Context& context) {
   // TODO: Handle processing of log storage
-  if (!context.log->good()) {
+  if (!context.log.good()) {
     std::cout << "Error opening storage" << '\n';
   }
 

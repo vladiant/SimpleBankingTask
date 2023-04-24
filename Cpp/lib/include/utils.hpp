@@ -1,5 +1,7 @@
 #pragma once
 
+#include <fstream>
+
 #include "types.hpp"
 
 namespace sbt {
@@ -12,8 +14,8 @@ void initializeUserBalance(const std::string& user, Balances& balances);
 
 Arguments extractCommands(const std::string& line);
 
-std::string readFromStorage(Storage t);
+std::string readFromStorage(Storage& storage);
 
-Storage createFileStorage(const std::string& fileName);
+std::fstream createFileStorage(const std::string& fileName);
 
 }  // namespace sbt
