@@ -10,10 +10,9 @@ int main(int, char**) {
   sbt::Context context{storage};
 
   context.output = std::shared_ptr<std::ostream>(&std::cout, [](void*) {});
-  context.input = std::shared_ptr<std::istream>(&std::cin, [](void*) {});
 
   sbt::initLoop(context);
-  sbt::processLoop(context);
+  sbt::processLoop(context, std::cin);
 
   return EXIT_SUCCESS;
 }

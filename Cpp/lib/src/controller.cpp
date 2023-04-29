@@ -175,14 +175,13 @@ void initLoop(Context& context) {
   context.balances = readBallances(context.log);
 }
 
-void processLoop(Context& context) {
+void processLoop(Context& context, Input& input) {
   bool shouldProcess = true;
   while (shouldProcess) {
     std::string line;
     // TODO: Set command prompt "$ "
     // TODO: Generic setup of input
-    // TODO: Check if valid
-    std::getline(*context.input, line);
+    std::getline(input, line);
 
     // TODO: Refactor balance reading
     const auto status = processCommand(line, context);

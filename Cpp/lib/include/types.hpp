@@ -14,7 +14,7 @@ using Balances = std::map<std::string, BalanceType>;
 using Arguments = std::vector<std::string>;
 using Result = std::string;
 using Storage = std::iostream;
-using Input = std::shared_ptr<std::istream>;
+using Input = std::istream;
 using Output = std::shared_ptr<std::ostream>;
 
 struct Context {
@@ -26,8 +26,6 @@ struct Context {
   Storage& log;
   // TODO: Consider using null object
   Output output;
-  // TODO: Consider using null object
-  Input input;
   Result result;
 };
 

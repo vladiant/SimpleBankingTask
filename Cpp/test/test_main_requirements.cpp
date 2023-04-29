@@ -45,8 +45,10 @@ struct MainRequirementsTest {
 UTEST_F_SETUP(MainRequirementsTest) {
   static_cast<void>(utest_result);
   EXPECT_FALSE(std::filesystem::exists(getPath()));
-  utest_fixture->storage_ = std::make_unique<std::fstream>(sbt::createFileStorage(getPath()));
-  utest_fixture->context_ = std::make_unique<sbt::Context>(*utest_fixture->storage_);
+  utest_fixture->storage_ =
+      std::make_unique<std::fstream>(sbt::createFileStorage(getPath()));
+  utest_fixture->context_ =
+      std::make_unique<sbt::Context>(*utest_fixture->storage_);
   utest_fixture->output_ = std::make_shared<std::stringstream>();
 }
 
@@ -59,19 +61,18 @@ UTEST_F_TEARDOWN(MainRequirementsTest) {
 
 UTEST_F(MainRequirementsTest, MainRequirements_LoginLogout_Messages) {
   // Arrange
-  auto command_buffer = std::make_shared<std::stringstream>();
-  *command_buffer << kLogin << kSep << kTestUsername << kSep << kTestPassword
-                  << kEOC;
-  *command_buffer << kLogout << kEOC;
+  std::stringstream command_buffer;
+  command_buffer << kLogin << kSep << kTestUsername << kSep << kTestPassword
+                 << kEOC;
+  command_buffer << kLogout << kEOC;
 
   auto& context = *utest_fixture->context_;
-  context.input = command_buffer;
   context.output = utest_fixture->output_;
 
   initLoop(context);
 
   // Act
-  processLoop(context);
+  processLoop(context, command_buffer);
 
   // Assert
   std::stringstream expectedResponse;
@@ -83,20 +84,19 @@ UTEST_F(MainRequirementsTest, MainRequirements_LoginLogout_Messages) {
 UTEST_F(MainRequirementsTest,
         MainRequirements_LoginGetBalanceLogout_ZeroBalance) {
   // Arrange
-  auto command_buffer = std::make_shared<std::stringstream>();
-  *command_buffer << kLogin << kSep << kTestUsername << kSep << kTestPassword
-                  << kEOC;
-  *command_buffer << kGetBalance << kEOC;
-  *command_buffer << kLogout << kEOC;
+  std::stringstream command_buffer;
+  command_buffer << kLogin << kSep << kTestUsername << kSep << kTestPassword
+                 << kEOC;
+  command_buffer << kGetBalance << kEOC;
+  command_buffer << kLogout << kEOC;
 
   auto& context = *utest_fixture->context_;
-  context.input = command_buffer;
   context.output = utest_fixture->output_;
 
   initLoop(context);
 
   // Act
-  processLoop(context);
+  processLoop(context, command_buffer);
 
   // Assert
   std::stringstream expectedResponse;
@@ -109,22 +109,21 @@ UTEST_F(MainRequirementsTest,
 UTEST_F(MainRequirementsTest,
         MainRequirements_LoginDepositGetBalanceLogout_DepositedBalance) {
   // Arrange
-  auto command_buffer = std::make_shared<std::stringstream>();
-  *command_buffer << kLogin << kSep << kTestUsername << kSep << kTestPassword
-                  << kEOC;
-  *command_buffer << kGetBalance << kEOC;
-  *command_buffer << kDeposit << kSep << kTestDeposit << kEOC;
-  *command_buffer << kGetBalance << kEOC;
-  *command_buffer << kLogout << kEOC;
+  std::stringstream command_buffer;
+  command_buffer << kLogin << kSep << kTestUsername << kSep << kTestPassword
+                 << kEOC;
+  command_buffer << kGetBalance << kEOC;
+  command_buffer << kDeposit << kSep << kTestDeposit << kEOC;
+  command_buffer << kGetBalance << kEOC;
+  command_buffer << kLogout << kEOC;
 
   auto& context = *utest_fixture->context_;
-  context.input = command_buffer;
   context.output = utest_fixture->output_;
 
   initLoop(context);
 
   // Act
-  processLoop(context);
+  processLoop(context, command_buffer);
 
   // Assert
   std::stringstream expectedResponse;
@@ -139,24 +138,23 @@ UTEST_F(MainRequirementsTest,
 UTEST_F(MainRequirementsTest,
         MainRequirements_LoginDepositWithdrawGetBalanceLogout_TotalBalance) {
   // Arrange
-  auto command_buffer = std::make_shared<std::stringstream>();
-  *command_buffer << kLogin << kSep << kTestUsername << kSep << kTestPassword
-                  << kEOC;
-  *command_buffer << kGetBalance << kEOC;
-  *command_buffer << kDeposit << kSep << kTestDeposit << kEOC;
-  *command_buffer << kGetBalance << kEOC;
-  *command_buffer << kWithdraw << kSep << kTestWithdraw << kEOC;
-  *command_buffer << kGetBalance << kEOC;
-  *command_buffer << kLogout << kEOC;
+  std::stringstream command_buffer;
+  command_buffer << kLogin << kSep << kTestUsername << kSep << kTestPassword
+                 << kEOC;
+  command_buffer << kGetBalance << kEOC;
+  command_buffer << kDeposit << kSep << kTestDeposit << kEOC;
+  command_buffer << kGetBalance << kEOC;
+  command_buffer << kWithdraw << kSep << kTestWithdraw << kEOC;
+  command_buffer << kGetBalance << kEOC;
+  command_buffer << kLogout << kEOC;
 
   auto& context = *utest_fixture->context_;
-  context.input = command_buffer;
   context.output = utest_fixture->output_;
 
   initLoop(context);
 
   // Act
-  processLoop(context);
+  processLoop(context, command_buffer);
 
   // Assert
   std::stringstream expectedResponse;
