@@ -5,6 +5,7 @@ project(TaskCpp)
 # Library
 add_library(
     BankingLib
+    lib/include/null_output.hpp
     lib/include/types.hpp
     lib/include/commands.hpp
     lib/include/queries.hpp
