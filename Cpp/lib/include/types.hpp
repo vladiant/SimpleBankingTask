@@ -2,7 +2,6 @@
 
 #include <iosfwd>
 #include <map>
-#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -15,17 +14,16 @@ using Arguments = std::vector<std::string>;
 using Result = std::string;
 using Storage = std::iostream;
 using Input = std::istream;
-using Output = std::shared_ptr<std::ostream>;
+using Output = std::ostream;
 
 struct Context {
-  Context(Storage& aLog) : log{aLog} {}
+  Context(Storage& aLog, Output& aOutput) : log{aLog}, output{aOutput} {}
 
   // Consider empty name as no logged user
   std::string username;
   Balances balances;
   Storage& log;
-  // TODO: Consider using null object
-  Output output;
+  Output& output;
   Result result;
 };
 

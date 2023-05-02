@@ -14,9 +14,7 @@ Status processHistory([[maybe_unused]] const Arguments& arguments,
   context.log.flush();
 
   auto data = readFromStorage(context.log);
-  if (context.output) {
-    *context.output << data << '\n';
-  }
+  context.output << data << '\n';
 
   return Status::OK;
 }
@@ -73,10 +71,8 @@ Status processTransfer(const Arguments& arguments, Context& context) {
               << "transfer " << amount << " to " << user << '\n';
 
   // TODO: Fix duplication
-  if (context.output) {
-    *context.output << context.username << " "
-                    << "transfer " << amount << " to " << user << '\n';
-  }
+  context.output << context.username << " "
+                 << "transfer " << amount << " to " << user << '\n';
 
   return Status::OK;
 }

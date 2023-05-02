@@ -42,7 +42,7 @@ int main() {
     std::signal(SIGQUIT, signalHandler);
 
     auto storage = sbt::createFileStorage(getPath().string());
-    sbt::Context context{storage};
+    sbt::Context context{storage, std::cout};
 
     sbt::initLoop(context);
 

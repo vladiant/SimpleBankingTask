@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "commands.hpp"
+#include "null_output.hpp"
 #include "queries.hpp"
 #include "utils.hpp"
 
@@ -33,17 +34,13 @@ Status processCommand(const std::string& line, Context& context) {
     case 2:
       if (command == "get") {
         if (context.username.empty()) {
-          if (context.output) {
-            *context.output << "No user logged!\n";
-          }
+          context.output << "No user logged!\n";
           return Status::NOT_LOGGED;
         }
         return processGet({commands[1]}, context);
       } else if (command == "withdraw") {
         if (context.username.empty()) {
-          if (context.output) {
-            *context.output << "No user logged!\n";
-          }
+          context.output << "No user logged!\n";
           return Status::NOT_LOGGED;
         }
         // TODO: Handle insufficient amount
@@ -52,9 +49,7 @@ Status processCommand(const std::string& line, Context& context) {
 
       } else if (command == "deposit") {
         if (context.username.empty()) {
-          if (context.output) {
-            *context.output << "No user logged!\n";
-          }
+          context.output << "No user logged!\n";
           return Status::NOT_LOGGED;
         }
         // TODO: Which user?
@@ -76,9 +71,7 @@ Status processCommand(const std::string& line, Context& context) {
     case 4:
       if (command == "transfer") {
         if (context.username.empty()) {
-          if (context.output) {
-            *context.output << "No user logged!\n";
-          }
+          context.output << "No user logged!\n";
           return Status::NOT_LOGGED;
         }
         const std::string subCommand{commands[2]};
@@ -103,7 +96,8 @@ Status processCommand(const std::string& line, Context& context) {
 }
 
 Balances readBallances(Storage& storage) {
-  Context context{storage};
+  NullOutput output;
+  Context context{storage, output};
 
   if (!storage) {
     std::cout << "Empty storage" << '\n';
@@ -188,9 +182,7 @@ void processLoop(Context& context, Input& input) {
 
     const auto result = processStatus(status, context);
 
-    if (context.output) {
-      *context.output << result;
-    }
+    context.output << result;
 
     if (Status::LOGOUT == status) {
       shouldProcess = false;
