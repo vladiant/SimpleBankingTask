@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
 
       socket.send_to(asio::buffer(request), receiver_endpoint);
 
-      std::array<char, 128> recv_buf;
+      std::array<char, 128> recv_buf{};
       udp::endpoint sender_endpoint;
       size_t len = socket.receive_from(asio::buffer(recv_buf), sender_endpoint);
 

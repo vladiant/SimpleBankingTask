@@ -57,7 +57,7 @@ int main() {
 
       acceptor.accept(socket);
 
-      std::array<char, 128> buf;
+      std::array<char, 128> buf{};
       asio::error_code error;
       size_t len = socket.read_some(asio::buffer(buf), error);
 

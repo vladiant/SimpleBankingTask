@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <iostream>
 #include <list>
+#include <utility>
 
 #include "controller.hpp"
 #include "utils.hpp"
@@ -26,8 +27,8 @@ void signalHandler([[maybe_unused]] int signal) { svr.stop(); }
 
 class CommandProcessor {
  public:
-  CommandProcessor(const std::string& command, sbt::Context& context)
-      : mCommand{command}, mContext{context} {}
+  CommandProcessor(std::string command, sbt::Context& context)
+      : mCommand{std::move(command)}, mContext{context} {}
 
   void operator()(const httplib::Request& req, httplib::Response& res) {
     std::string line = mCommand;

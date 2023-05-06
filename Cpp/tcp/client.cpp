@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
       }
 
       for (;;) {
-        std::array<char, 128> buf;
+        std::array<char, 128> buf{};
         asio::error_code error;
 
         socket.write_some(asio::buffer(request), error);

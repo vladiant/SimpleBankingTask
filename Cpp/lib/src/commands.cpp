@@ -1,5 +1,7 @@
 #include "commands.hpp"
 
+#include <math.h>
+
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -22,7 +24,7 @@ Status processHistory([[maybe_unused]] const Arguments& arguments,
 Status processWithdraw(const Arguments& arguments, Context& context) {
   // TODO: Handle improper arguments size
   std::stringstream ss(arguments.at(0));
-  BalanceType amount;
+  BalanceType amount = NAN;
   ss >> amount;
   context.balances[context.username] -= amount;
 
@@ -34,7 +36,7 @@ Status processWithdraw(const Arguments& arguments, Context& context) {
 Status processDeposit(const Arguments& arguments, Context& context) {
   // TODO: Handle improper arguments size
   std::stringstream ss(arguments.at(0));
-  BalanceType amount;
+  BalanceType amount = NAN;
   ss >> amount;
   context.balances[context.username] += amount;
 
@@ -46,7 +48,7 @@ Status processDeposit(const Arguments& arguments, Context& context) {
 Status processTransfer(const Arguments& arguments, Context& context) {
   // TODO: Handle improper arguments size
   std::stringstream ss(arguments.at(0));
-  BalanceType amount;
+  BalanceType amount = NAN;
   ss >> amount;
   const std::string user{arguments.at(1)};
   // TODO: Handle insufficient balance
