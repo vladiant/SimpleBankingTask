@@ -95,7 +95,7 @@ Status processCommand(const std::string& line, Context& context) {
   return Status::OK;
 }
 
-Balances readBallances(Storage& storage) {
+Balances readBalances(Storage& storage) {
   NullOutput output;
   Context context{storage, output};
 
@@ -166,7 +166,7 @@ void initLoop(Context& context) {
     std::cout << "Error opening storage" << '\n';
   }
 
-  context.balances = readBallances(context.log);
+  context.balances = readBalances(context.log);
 }
 
 void processLoop(Context& context, Input& input) {
