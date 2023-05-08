@@ -1,6 +1,7 @@
 #include "controller.hpp"
 
 #include <iostream>
+#include <sstream>
 
 #include "commands.hpp"
 #include "null_output.hpp"
@@ -104,10 +105,13 @@ Balances readBalances(Storage& storage) {
     return {};
   }
 
+  const auto str = readFromStorage(storage);
+  std::stringstream archiveStorage{str};
+
   // Commands loop
-  while (storage.good()) {
+  while (archiveStorage.good()) {
     std::string line;
-    std::getline(storage, line);
+    std::getline(archiveStorage, line);
     if (line.empty()) {
       break;
     }

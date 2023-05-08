@@ -101,8 +101,7 @@ Status processLogin(const Arguments& arguments, Context& context) {
   initializeUserBalance(context.username, context.balances);
 
   context.log << context.username << " "
-              << "login "
-              << " " << password << '\n';
+              << "login " << password << '\n';
 
   return Status::LOGIN;
 }
