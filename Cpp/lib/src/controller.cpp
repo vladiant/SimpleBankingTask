@@ -38,7 +38,7 @@ Status processCommand(const std::string& line, Context& context) {
           context.output << "No user logged!\n";
           return Status::NOT_LOGGED;
         }
-        return processGet({commands[1]}, context);
+        return processGet({commands.at(1)}, context);
       } else if (command == "withdraw") {
         if (context.username.empty()) {
           context.output << "No user logged!\n";
@@ -46,7 +46,7 @@ Status processCommand(const std::string& line, Context& context) {
         }
         // TODO: Handle insufficient amount
         // TODO: Which user?
-        processWithdraw({commands[1]}, context);
+        processWithdraw({commands.at(1)}, context);
 
       } else if (command == "deposit") {
         if (context.username.empty()) {
@@ -55,7 +55,7 @@ Status processCommand(const std::string& line, Context& context) {
         }
         // TODO: Which user?
         // TODO: When OK?
-        return processDeposit({commands[1]}, context);
+        return processDeposit({commands.at(1)}, context);
       } else {
         printNotSupportedCommand(commands);
         return Status::UNKNOWN_COMMAND;
@@ -63,7 +63,7 @@ Status processCommand(const std::string& line, Context& context) {
       break;
     case 3:
       if (command == "login") {
-        return processLogin({commands[1], commands[2]}, context);
+        return processLogin({commands.at(1), commands.at(2)}, context);
       } else {
         printNotSupportedCommand(commands);
         return Status::UNKNOWN_COMMAND;
@@ -75,13 +75,13 @@ Status processCommand(const std::string& line, Context& context) {
           context.output << "No user logged!\n";
           return Status::NOT_LOGGED;
         }
-        const std::string subCommand{commands[2]};
+        const std::string subCommand{commands.at(2)};
         if (subCommand != "to") {
           printNotSupportedCommand(commands);
           return Status::UNKNOWN_COMMAND;
         }
 
-        return processTransfer({commands[1], commands[3]}, context);
+        return processTransfer({commands.at(1), commands.at(3)}, context);
 
       } else {
         printNotSupportedCommand(commands);
@@ -134,14 +134,14 @@ Balances readBalances(Storage& storage) {
     switch (commands.size()) {
       case 3:
         if (command == "withdraw") {
-          processWithdraw({commands[2]}, context);
+          processWithdraw({commands.at(2)}, context);
         } else if (command == "deposit") {
-          processDeposit({commands[2]}, context);
+          processDeposit({commands.at(2)}, context);
         }
         break;
       case 5:
         if (command == "transfer") {
-          const std::string subCommand{commands[3]};
+          const std::string subCommand{commands.at(3)};
           if (subCommand != "to") {
             printNotSupportedCommand(commands);
             continue;
@@ -153,7 +153,7 @@ Balances readBalances(Storage& storage) {
           // and transfer was done to existing user.
           initializeUserBalance(user, context.balances);
 
-          processTransfer({commands[2], user}, context);
+          processTransfer({commands.at(2), user}, context);
         }
         break;
     }
