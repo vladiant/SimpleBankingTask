@@ -74,6 +74,7 @@ add_executable(
     test/testing_utils.hpp
     test/testing_utils.cpp
     test/test_main_requirements.cpp
+    test/test_process_login.cpp
     test/main.cpp
 )
 
