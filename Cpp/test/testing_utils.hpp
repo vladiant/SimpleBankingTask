@@ -4,7 +4,10 @@
 
 namespace sbt {
 
+enum class Status;
+
 void utest_type_printer(const std::string& val);
+void utest_type_printer(const Status& val);
 
 namespace Test {
 

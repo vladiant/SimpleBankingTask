@@ -31,6 +31,7 @@ enum class Status {
   EMPTY,
   UNKNOWN_COMMAND,
   UNKNOWN_USER,
+  // TODO: Invalid arguments
   LOGIN,
   LOGOUT,
   NOT_LOGGED,

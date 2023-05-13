@@ -18,6 +18,7 @@ Status processCommand(const std::string& line, Context& context) {
     return Status::EMPTY;
   }
 
+  // TODO: Extract rest of the commands
   const auto& command = commands.at(0);
 
   // Process command
@@ -63,7 +64,7 @@ Status processCommand(const std::string& line, Context& context) {
       break;
     case 3:
       if (command == "login") {
-        return processLogin({commands.at(1), commands.at(2)}, context);
+        return processLogin(commands, context);
       } else {
         printNotSupportedCommand(commands);
         return Status::UNKNOWN_COMMAND;
@@ -147,7 +148,7 @@ Balances readBalances(Storage& storage) {
             continue;
           }
 
-          const std::string user{commands[4]};
+          const std::string user{commands.at(4)};
 
           // It is assumed that record is OK
           // and transfer was done to existing user.

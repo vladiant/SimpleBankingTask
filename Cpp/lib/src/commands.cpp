@@ -94,10 +94,10 @@ Status processLogout(const Arguments&, Context& context) {
 
 Status processLogin(const Arguments& arguments, Context& context) {
   // TODO: Handle improper arguments size
-  const std::string password{arguments.at(1)};
+  const std::string password{arguments.at(2)};
 
   // TODO: Handle password check
-  context.username = arguments.at(0);
+  context.username = arguments.at(1);
   initializeUserBalance(context.username, context.balances);
 
   context.log << context.username << " "
