@@ -33,6 +33,9 @@ void utest_type_printer(const Status& val) {
     case Status::UNKNOWN_USER:
       std::cout << '\n' << "UNKNOWN_USER";
       break;
+    case Status::INVALID_ARGUMENTS:
+      std::cout << '\n' << "INVALID_ARGUMENTS";
+      break;
     default:
       std::cout << '\n' << "Unknown enum value: " << static_cast<int64_t>(val);
       break;

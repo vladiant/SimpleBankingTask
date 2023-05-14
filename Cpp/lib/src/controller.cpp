@@ -206,6 +206,9 @@ std::string processStatus(Status status, Context& context) {
     case Status::UNKNOWN_USER:
       return "unknown user!\n";
       break;
+    case Status::INVALID_ARGUMENTS:
+      return "invalid arguments!\n";
+      break;
     case Status::EMPTY:
       return "empty command line!\n";
       break;
