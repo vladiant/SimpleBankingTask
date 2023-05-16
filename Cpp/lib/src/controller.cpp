@@ -18,22 +18,23 @@ Status processCommand(const std::string& line, Context& context) {
     return Status::EMPTY;
   }
 
-  // TODO: Extract rest of the commands
   const auto& command = commands.at(0);
+  const Arguments commandArguments(std::next(std::begin(commands)),
+                                   std::end(commands));
 
   // Process command
-  switch (commands.size()) {
-    case 1:
+  switch (commandArguments.size()) {
+    case 0:
       if (command == "logout") {
-        return processLogout({}, context);
+        return processLogout(commandArguments, context);
       } else if (command == "history") {
-        return processHistory({}, context);
+        return processHistory(commandArguments, context);
       } else {
         printNotSupportedCommand(commands);
         return Status::UNKNOWN_COMMAND;
       }
       break;
-    case 2:
+    case 1:
       if (command == "get") {
         if (context.username.empty()) {
           context.output << "No user logged!\n";
@@ -62,7 +63,7 @@ Status processCommand(const std::string& line, Context& context) {
         return Status::UNKNOWN_COMMAND;
       }
       break;
-    case 3:
+    case 2:
       if (command == "login") {
         return processLogin(commands, context);
       } else {
@@ -70,7 +71,7 @@ Status processCommand(const std::string& line, Context& context) {
         return Status::UNKNOWN_COMMAND;
       }
       break;
-    case 4:
+    case 3:
       if (command == "transfer") {
         if (context.username.empty()) {
           context.output << "No user logged!\n";
@@ -127,20 +128,22 @@ Balances readBalances(Storage& storage) {
     // First command is the username
     context.username = commands.at(0);
     const auto& command = commands.at(1);
+    const Arguments commandArguments(std::next(std::begin(commands)),
+                                     std::end(commands));
 
     // TODO: Set it to use context
     initializeUserBalance(context.username, context.balances);
 
     // Process command
-    switch (commands.size()) {
-      case 3:
+    switch (commandArguments.size()) {
+      case 2:
         if (command == "withdraw") {
           processWithdraw({commands.at(2)}, context);
         } else if (command == "deposit") {
           processDeposit({commands.at(2)}, context);
         }
         break;
-      case 5:
+      case 4:
         if (command == "transfer") {
           const std::string subCommand{commands.at(3)};
           if (subCommand != "to") {
@@ -163,8 +166,7 @@ Balances readBalances(Storage& storage) {
   return context.balances;
 }
 
-// TODO: Fix usage of filename - in context
-// TODO: Haindle initialization failure
+// TODO: Handle initialization failure
 void initLoop(Context& context) {
   // TODO: Handle processing of log storage
   if (!context.log.good()) {
