@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  banking-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: banking-app
+    ports:
+      - "12345:12345"
+    command: ["python", "simple_banking.py", "tcp", "12345"]
+    # volumes:
+    #   - ./accounts:/app/accounts  # Persist accounts data (optional)
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "12345"]
+      # test: ["CMD", "curl", "-f", "http://localhost:12345"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  banking-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: banking-tests
+    depends_on:
+      - banking-app
+    environment:
+      - BANKING_TCP_HOST=banking-app
+      - BANKING_TCP_PORT=12345
+    command: ["pytest", "test_functional_tcp.py"]
